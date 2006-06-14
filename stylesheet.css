@@ -1,0 +1,30 @@
+TABLE { border-style: none; margin: 3pt; }
+TABLE.dense { border-style: none; border-spacing: 0; margin: 0; padding: 0; }
+TABLE.results-inner { border-spacing: 0; margin: 0; padding: 0; }
+TABLE.view-inner { border-spacing: 0; margin: 0; padding: 0; }
+TABLE.toolbar	{ border: thin dotted black; background-color: #E5EFFF; }
+TABLE.results-outer	{ border: thin dotted black; background-color: #E5EFFF; }
+TABLE.view-outer	{ border: thin dotted black; background-color: #E5EFFF; }
+TABLE.actionbar { border-spacing: 2pt; margin: 0; padding: 2pt; width: 98%; }
+TABLE.error { border: thin dotted black; margin-top: 8%; }
+A:link,A:visited { color: #3333CC; text-decoration: none; }
+A:hover { background-color: #D5DFFF; text-decoration: underline; }
+TR.results-inner { border: thin dotted black; }
+TR.view-inner { border: thin dotted black; }
+TR.dnbgcolor { background-color: #B5BFEF; }
+TR.bgcolor1  { background-color: #C5CFEF; }
+TR.bgcolor2  { background-color: #E5EFFF; }
+TR.actionbar { text-align: center; }
+TD.view-dnattr { color: #000066; font-weight: bold; font-size: large; }
+TD.attr	  { color: #222266; width: 35%; border: thin solid white; }
+TD.value  { color: #222266; border: thin solid white; }
+TD.dense	{ padding: 0; border-spacing: 0; }
+TD.results-inner { border: thin solid black; }
+TD.view-inner { border: thin solid white; }
+TD.success { border: thin solid black; font-weight: bold; color: green; }
+TD.failed { border: thin solid black; font-weight: bold; color: red; }
+HR { border: 1px dashed #B5BFEF; }
+ACRONYM { border-bottom: 1px dotted #333; cursor: help; }
+H2 { font-size: 10px; color: #AAAAAA; font-weight: normal; }
+INPUT.submit { background: #E5EFFF; color: #3333CC; }
+
