@@ -161,6 +161,32 @@ function getCachedSchema($ldap_func, &$name2oid, &$objectclasses) {
 }
 # }}}
 
+# {{{ removeDupAttributes() takes a MayMust array, and removes duplicate items
+#      - If same attribute appears in both May & Must, leave it in Must
+#      - Duplicates by OID, not only by name
+function removeDupAttributes($mayMustArray, $attributes2oid) {
+	$oids = array();
+	$returnArray = array();
+	$returnArray["may"] = array();
+	$returnArray["must"] = array();
+
+	foreach ( array("must", "may") as $mayOrMust) {
+		foreach ($mayMustArray[$mayOrMust] as $attr) {
+			$oid = $attributes2oid[strtolower($attr)];
+
+			// If we've never yet seen $oid, it's not a dup, yey :)
+			if (!in_array($oid, $oids)) {
+				array_push($oids, $oid);
+				array_push($returnArray[$mayOrMust], $attr);
+			}
+			// If it's a dup, do nothing..
+		}
+	}
+
+	return $returnArray;
+}
+# }}}
+
 # {{{ viewEntry() displays the given entry's attributes and values,
 # according to the schema of its objectclasses
 # If no entry is given we display an empty entry of the specified object claases
@@ -178,6 +204,8 @@ function viewEntry($ldap_func, $entry, $empties = 0, $dn = "", $objectclasses = 
 
 	# Get the schema contents
 	getCachedSchema($ldap_func, $name2oid, $schema_objectclasses);
+	// TODO should be cached
+	$ldap_func->getSchemaHash_attributeTypes($attributes2oid, $schema_attributetypes);
 
 	if ($entry) { # Existing entry; read it.
 		$sr = ldap_read($ldap_func->ldap_conn, formatInputStr($entry), "(objectclass=*)") or exitOnError(ERROR_LDAP_CANT_SEARCH);
@@ -206,8 +234,9 @@ function viewEntry($ldap_func, $entry, $empties = 0, $dn = "", $objectclasses = 
 	}
 
 	# Remove dups + sort
-	$attributes["must"] = array_unique($attributes["must"]);
-	$attributes["may"]  = array_unique($attributes["may"]);
+/*	$attributes["must"] = array_unique($attributes["must"]);
+	$attributes["may"]  = array_unique($attributes["may"]);*/
+	$attributes = removeDupAttributes($attributes, $attributes2oid);
 	asort($attributes["must"]);
 	asort($attributes["may"]);
 
@@ -250,15 +279,30 @@ function viewEntry($ldap_func, $entry, $empties = 0, $dn = "", $objectclasses = 
 
 			if (array_key_exists(strtolower($attr), $data[0]))
 				$val  = $data[0][strtolower($attr)];
-			else
-				$val = NULL;
+			else {
+				$val = NULL; // No value found..
+
+				// Maybe the value hides in a twin-attribute?	
+				// (i.e. userid instead of uid / vice versa)
+				$synonyms = $ldap_func->getSynonymAttrs($attributes2oid, strtolower($attr));
+				foreach ($synonyms as $synonym) {
+					if ($data[0][$synonym]) { // FOUND!
+						$attr = $synonym;
+						$val = $data[0]["uid"];
+					}
+				}
+			}
 
 			# Show all the existing values (if none, at least one empty!) 
 			# + $empties empty_values in addition
 			for ($j = 0; ($j < ( max($val["count"], 1) + $empties)); $j++) {
-				if ($j + 1 > $val["count"]) $value = "";
-				else
+				
+				if ($j + 1 > $val["count"]) {
+					$value = ""; // No more values here
+				}
+				else {
 					$value = formatOutputStr($val[$j]);
+				}
 				$htmloutput->viewInnerRow($attr, $value, $attr_type == "must", $acronym_body);
 			}
 		}
@@ -498,7 +542,7 @@ function search($ldap_func, $post_vars) {
 function choose_entrytype($entry_types, $ldap_func, $parent) {
 
 	$ldap_func->getSchemaHash($name2oid, $schema_objectclasses);
-	
+
 	require INCLUDE_PATH."/choose_entrytype_form.inc";
 } # }}}
 
@@ -642,7 +686,7 @@ if ($submit) { # If it's a form which was submitted (modify/del/add...)
 	if (is_array($_POST)) {
 		# First format the posted strings
 		$post_vars = formatInputArray($_POST);
-	  }
+	}
 
 	switch ($submit) {
 		case "Modrdn": modrdn($ldap_func, $post_vars); break;

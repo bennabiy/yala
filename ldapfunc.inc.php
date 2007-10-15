@@ -192,14 +192,13 @@ class LDAPFunc {
 					if (ereg("NAME[[:space:]]+\(([^\)]+)", $line, $matches)) {
 						$objectclasses[$oid]["names"] = split("[[:space:]]+", str_replace("'", "", trim($matches[1])));
 #						print "NAME: ".str_replace("'","",$matches[1])."<BR>";
-					} else { 
-						if (ereg("NAME[[:space:]]+\'([^\']+)", $line, $matches)) {
-							$objectclasses[$oid]["names"] = array($matches[1]);
-#							print "NAME: ".$matches[1]."<BR>";
-						} else {
-							die("<BR>WEIRD line: $line<BR><HR>"); 
-						}
 					}
+					elseif (ereg("NAME[[:space:]]+\'([^\']+)", $line, $matches)) {
+						$objectclasses[$oid]["names"] = array($matches[1]);
+#						print "NAME: ".$matches[1]."<BR>";
+					}
+					else
+						die("<BR>WEIRD line: $line<BR><HR>"); 
 
 					# SUP
 					if (ereg("SUP[[:space:]]+([[:alpha:]]+)", $line, $matches)) {
@@ -236,7 +235,7 @@ class LDAPFunc {
 					}
 
 
-
+					# Create the name2oid array
 					foreach ($objectclasses[$oid]["names"] as $name) {
 						$name2oid[strtolower($name)] = $oid;
 					}
@@ -244,6 +243,75 @@ class LDAPFunc {
 			}
 		}
 		
+	} /* }}} */
+
+	/* {{{	getSchemaHash_attributeTypes() returns a hash of the 
+		attributetypes part of the schema
+	*/
+	function GetSchemaHash_attributeTypes(&$name2oid, &$attributetypes) {
+		$subschema_dn = $this->getSubSchemaDN();
+		if (!$subschema_dn) die("Cannot get the subschema DN!");
+		$sr = ldap_read($this->ldap_conn, $subschema_dn, "(objectClass=*)", array("attributeTypes"));
+		if (!$sr) die("Search error! ".ldap_error($this->ldap_conn));
+		$info = ldap_get_entries($this->ldap_conn, $sr);
+		if (!$info || !$info["count"]) die("Cannot get schema information from root DSE!: ".ldap_error($this->ldap_conn));		
+
+		if (!array_key_exists("attributetypes", $info[0]))
+			return; // weird; attributetypes weren't found
+
+		for ($i = 0; $i < $info[0]["attributetypes"]["count"]; $i++) {
+			$line = $info[0]["attributetypes"][$i];
+
+			if (ereg('^$', $line)) continue;
+
+			# OID
+			if (ereg("^[[:space:]]*\([[:space:]]*([\._[:alnum:]\-]+)[[:space:]]+", $line, $matches)) //(\.\_[:alnum:]\-]+)[:space:]*\)[:space:]*$", $line, $matches))
+				$oid = $matches[1];
+			else
+				die("<BR>WEIRD line: ".$line."end<BR><HR>"); 
+				
+			# NAME
+			if (ereg("[[:space:]]+NAME[[:space:]]+\(([^\)]+)", $line, $matches)) {
+				$attributetypes[$oid]["names"] = split("[[:space:]]+", str_replace("'", "", trim($matches[1])));
+//				print "NAME: ".str_replace("'","",$matches[1])."<BR>";
+			}
+			elseif (ereg("[[:space:]]+NAME[[:space:]]+\'([^\']+)", $line, $matches)) {
+				$attributetypes[$oid]["names"] = array($matches[1]);
+//				print "NAME: ".$matches[1]."<BR>";
+			}
+			else
+				die("<BR>WEIRD line: $line<BR><HR>"); 
+
+			# DESC
+			if (ereg("[[:space:]]+DESC[[:space:]]+\'([^\']+)", $line, $matches)) {
+				$attributetypes[$oid]["desc"] = $matches[1];
+//				print "DESC: ".$matches[1]."<BR>";
+			}
+
+			# SYNTAX - not yet implemented
+			# Create the name2oid array
+			foreach ($attributetypes[$oid]["names"] as $name) {
+				$name2oid[strtolower($name)] = $oid;
+			}
+		}
+	} /* }}} */
+
+	/* {{{ getSynonymAttrs(name2oid, origAttr) returns an array of attributes
+		same as $origAttr
+	*/
+	function getSynonymAttrs($name2oid, $origAttr) {
+		$retArray = array();
+
+		$origOid = $name2oid[$origAttr];
+
+		foreach (array_keys($name2oid) as $attr) {
+			$oid = $name2oid[$attr];
+			if ($oid == $origOid) {
+				array_push($retArray, $attr);
+			}
+		}
+
+		return $retArray;
 	} /* }}} */
 
 }
