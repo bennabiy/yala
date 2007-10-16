@@ -91,7 +91,7 @@ class HTMLOutput {
 	function viewInnerRowDN($dn) {
 		echo "
 		<TR CLASS=\"bgcolor1\"><TD CLASS=\"view-dnattr\">";
-echo "<ACRONYM TITLE=\"Disntinguished Name\">dn</ACRONYM>&nbsp;<FONT";
+echo "<ACRONYM TITLE=\"Distinguished Name\">dn</ACRONYM>&nbsp;<FONT";
 echo " SIZE=\"-2\">[&nbsp;<A HREF=\"".MAINFILE."?do=modrdn_form&amp;entry=";
 echo urlencode($dn)."\">Modify DN</A>&nbsp;]&nbsp;</FONT></TD>";
 echo "<TD><INPUT TYPE=\"text\" NAME=\"dn\" VALUE=\"".formatOutputStr($dn);
@@ -102,7 +102,7 @@ echo "\" SIZE=\"".INPUT_TEXT_SIZE."\"></TD></TR>\n";
 	function modrdnInnerRowDN($dn) {
 		echo "
 		<TR CLASS=\"bgcolor1\"><TD CLASS=\"view-dnattr\">";
-echo "<ACRONYM TITLE=\"The DN before the modifictation\">dn</ACRONYM></TD>";
+echo "<ACRONYM title=\"The DN before the modifictation\">dn</ACRONYM></TD>";
 echo "<TD>".formatOutputStr($dn)."</TD></TR>\n";
 
 	}
@@ -118,7 +118,7 @@ echo "<TD>".formatOutputStr($dn)."</TD></TR>\n";
 
 		$str = 
 "		<TR CLASS=\"".$this->bgcolor."\"><TD CLASS=\"attr\">";
-		if ($acronym) $str .= "<ACRNOYM TITLE=\"".$acronym."\">";
+		if ($acronym) $str .= "<ACRONYM title=\"".$acronym."\">";
 		$str .= $attr;
 		if ($acronym) $str .= "</ACRONYM>";
 		$str .= "</TD><TD CLASS=\"value\"><INPUT TYPE=\"text\" NAME=\"";
@@ -139,7 +139,7 @@ echo "<TD>".formatOutputStr($dn)."</TD></TR>\n";
 		$str = 
 "		<TR CLASS=\"".$this->bgcolor."\"><TD CLASS=\"attr\">";
 		if ($bold) $str .= "<B>";
-		if ($acronym) $str .= "<ACRNOYM TITLE=\"".$acronym."\">";
+		if ($acronym) $str .= "<ACRONYM title=\"".$acronym."\">";
 		$str .= $attr;
 		if ($acronym) $str .= "</ACRONYM>";
 		if ($bold) $str .= "</B>";

@@ -270,12 +270,25 @@ function viewEntry($ldap_func, $entry, $empties = 0, $dn = "", $objectclasses = 
 	foreach (array("must", "may") as $attr_type) {
 		foreach ($attributes[$attr_type] as $attr) {
 
+			if (!array_key_exists(strtolower($attr), $attributes2oid)) 
+				continue; // shouldn't happen
+
+			$oid = $attributes2oid[strtolower($attr)];
+			if (!array_key_exists($oid, $schema_attributetypes))
+				continue; //shouldn't happen
+
 			# See if there's a description to this specific attribute
 			$acronym_body = "";
+			
+			/* Add attr description from the schema if exists */
+			if (array_key_exists("desc", $schema_attributetypes[$oid])) {
+				$acronym_body = $schema_attributetypes[$oid]["desc"];
+			}
 
+			/* Internaly set description? it'll override.. */
 			if (isset($attr_desc) && is_array($attr_desc))
-				if (array_key_exists($attr, $attr_desc))
-					$acronym_body = $attr_desc[$attr];
+				if (array_key_exists(strtolower($attr), $attr_desc))
+					$acronym_body = $attr_desc[strtolower($attr)];
 
 			if (array_key_exists(strtolower($attr), $data[0]))
 				$val  = $data[0][strtolower($attr)];
