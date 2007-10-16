@@ -6,10 +6,10 @@ LDAP platforms.. thus it's an alpha. Send bug reports!
 [FEATURE] Attribute description is now taken from the schema! kewl.. you may
 empty your attr_desc-config.inc.php file..
 
-[FIX] Fixed attribute multiple name bug - 10x tefluid (Yala is now aware that
+[FIX] Fixed attribute multiple names bug - 10x tefluid (Yala is now aware that
 attribute may have multiple names, i.e. userid & uid), about the time..
 
-[FIX] Fixed case attribute sensitivity bug - 10x uhering
+[FIX] Fixed attribute case sensitivity bug - 10x uhering
 
 
 Version 0.32 (14/06/2006) - Bugfixes. PHP5 & Fedora-DS compatibility!
