@@ -1,3 +1,17 @@
+Version 0.35a (17/06/2007) - Bugfixes + Feature
+-----------------------------------------------
+[NOTE] this version had some infrastructure changes and may be broken on some
+LDAP platforms.. thus it's an alpha. Send bug reports!
+
+[FEATURE] Attribute description is now taken from the schema! kewl.. you may
+empty your attr_desc-config.inc.php file..
+
+[FIX] Fixed attribute multiple name bug - 10x tefluid (Yala is now aware that
+attribute may have multiple names, i.e. userid & uid), about the time..
+
+[FIX] Fixed case attribute sensitivity bug - 10x uhering
+
+
 Version 0.32 (14/06/2006) - Bugfixes. PHP5 & Fedora-DS compatibility!
 ------------------------------------
 - Fixed schema parsing bug which arised especially in Fedora-DS (smackware)
