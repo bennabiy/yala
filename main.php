@@ -299,7 +299,7 @@ function viewEntry($ldap_func, $entry, $empties = 0, $dn = "", $objectclasses = 
 				// (i.e. userid instead of uid / vice versa)
 				$synonyms = $ldap_func->getSynonymAttrs($attributes2oid, strtolower($attr));
 				foreach ($synonyms as $synonym) {
-					if ($data[0][$synonym]) { // FOUND!
+					if (array_key_exists($synonym, $data[0])) { // FOUND!
 						$attr = $synonym;
 						$val = $data[0]["uid"];
 					}
