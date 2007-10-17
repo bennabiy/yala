@@ -1,3 +1,8 @@
+Version 0.35b (17/06/2007) - Bugfix
+-----------------------------------
+[FIX] Empty values showed lots of PHP errors.
+
+
 Version 0.35a (17/06/2007) - Bugfixes + Feature
 -----------------------------------------------
 [NOTE] this version had some infrastructure changes and may be broken on some

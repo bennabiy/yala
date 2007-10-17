@@ -9,7 +9,7 @@
 #
 
 # General
-define("YALA_VERSION", "0.35a");
+define("YALA_VERSION", "0.35b");
 
 # ERRORS
 define("ERROR_BAD_OP"			,1);
