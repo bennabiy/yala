@@ -1,4 +1,5 @@
 <?php
+# vim: foldmethod=marker
 #
 # HTMLOutput is a class which is supposed to contain all the ugly HTML code..
 # The idea is to make all the other code clean, and call functions from here to
@@ -220,5 +221,43 @@ echo "VALUE=\"New\"";
 <?php $this->viewActionBar($dn); ?>
 </FORM>
 <?php
+	}
+
+	function viewTreeElement($data) {
+		global $tree;
+
+		$dn = $data["dn"];
+		$rdn = mkRdn($dn);
+		$entryType = $data["entryType"];
+		if (isset($tree->iconsHash[$entryType])) {
+			$iconFile = $tree->iconsHash[$entryType]["filename"];
+			$iconSize = $tree->iconsHash[$entryType]["size"];
+		}
+		else {
+			$iconFile = DEFAULT_ICON;
+			$iconSize = "";
+		}
+		$iconStr = '<img src="'.IMAGES_URLPATH.'/icons/'.$iconFile.'" '.$iconSize.' border="0" alt="" class="TreeItemIcon"/>';
+
+		?>
+		<li><?=$iconStr?><a href="<?=MAINFILE?>?do=view_entry&amp;entry=<?=urlencode($dn)?>" target="right"><?=$rdn?></a><span>&nbsp;&nbsp;<sup>[<a href="<?=MAINFILE?>?do=choose_entrytype&amp;parent=<?=urlencode($dn)?>" target="right"><acronym title="Create a new entry under this entry">n</acronym></a>]</sup></span>
+		<?
+	}
+
+	function viewTree($treeArray) {
+		for ($i = 0; $i < $treeArray["count"]; $i++) {
+
+			$this->viewTreeElement($treeArray[$i]);
+			if ($treeArray[$i]["count"] == 0) {
+				/* LEAF: close it.. */
+				print "</li>";
+			}
+			else {
+				print "<ul>";
+				/* NODE: Recurse */
+				$this->viewTree($treeArray[$i]);
+				print "</ul>";
+			}
+		}
 	}
 }

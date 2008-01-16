@@ -3,10 +3,10 @@
 <HEAD>
 <?php
 if (isset($javascript) && $javascript)
-	echo "<SCRIPT LANGUAGE=\"javascript\">".$javascript."</SCRIPT>\n";
+	echo "<SCRIPT type=\"text/javascript\">".$javascript."</SCRIPT>\n";
 ?>
 <META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8">
-<LINK REL="stylesheet" TYPE="text/css" HREF="stylesheet.css">
+<LINK REL="stylesheet" TYPE="text/css" HREF="css/stylesheet.css">
 <TITLE>YALA</TITLE>
 </HEAD>
 <BODY>

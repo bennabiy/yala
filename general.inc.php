@@ -1,4 +1,5 @@
 <?php
+# vim: foldmethod=marker
 
 #
 # This files contains general functions and definitions...
@@ -191,4 +192,12 @@ function formatInputArray($a) {
 	return $a;
 } /* }}} */
 
-
+/* {{{ mkRdn($dn)
+       Simply returns the rdn (relational dn) of a dn
+*/
+function mkRdn($dn) {
+	if (ereg("^([^\,]+)", $dn, $regs))
+		return $regs[1];
+	else
+		die("Invalid dn $dn!");
+} /* }}} */
