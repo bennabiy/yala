@@ -1,0 +1,53 @@
+Tree
+	-> Toolbar
+		-> Search
+		    Opens 'search' dialog
+
+		-> New
+		   Opens 'create new entry' dialog
+
+		-> Logout
+		   logs out, link to login
+
+	-> Entries tree
+		-> Click on an entry
+		   Opens 'view entry' dialog
+
+		-> Click on '[n]' button
+		   Opens 'create new entry' dialog, parent dn already filled
+
+----
+
+'View Entry' Dialog
+	-> New ("Save As")
+	   Create a new ldap entry with the filled-in data
+
+	-> Modify
+	   Saves the filled-in data on the same name
+
+	-> Delete
+	   Confirmation box
+	   If confirmed deletes the entry
+
+----
+
+'Create new entry' dialog step I
+	-> Select a premade objectclass-set
+		-> Submit
+			Goes to step II
+
+	-> Multi-select wanted objectclasses
+		-> Submit
+			Goes to step II
+	
+'Create new entry' dialog step II
+	Actually just like the 'View Entry' dialog, only with "new" button only.
+
+----
+
+'Search' dialog
+	-> Search string
+	-> Base DN
+	-> Scope (Sub, One, Base)
+
+----

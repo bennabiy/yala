@@ -24,7 +24,6 @@ define("IMAGES_URLPATH",	"images");
 
 # PHP filenames. usually shouldn't be changed
 define("MAINFILE", "main.php");
-define("TREEFILE", "tree.php");
 
 # Icon to display when no matching icon was found (inside IMAGES_PATH)
 define("DEFAULT_ICON", "default.png");

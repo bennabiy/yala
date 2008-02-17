@@ -63,15 +63,11 @@ class HTMLOutput {
 
 
 
-	function viewHeader($dn = "") {
+	function viewHeader() {
 ?><!-- viewHeader -->
-<FORM NAME="form" METHOD="post" ACTION="<?php echo MAINFILE; ?>" <?php if (ENABLE_JAVASCRIPT) echo " onSubmit=\"javascript:return confirm('Are you sure you want to commit a \''+this.chosen_action.value+'\' operation on this entry?');\""; ?> >
-<?php if ($dn) echo "<INPUT TYPE=\"hidden\" NAME=\"entry\" VALUE=\"".$dn."\">\n"; ?>
-<INPUT TYPE="hidden" NAME="chosen_action" VALUE="none">
-
-<TABLE CLASS="view-outer" WIDTH="98%">
-	<TR CLASS="dnbgcolor"><TD CLASS="view-dnattr" ALIGN="center"><?php echo $dn; ?></TD></TR>
-<?php
+<form name="yalaForm" id="yalaForm">
+<table class="view-outer" width="98%">
+<?
 	}
 
 	function modrdnHeader($dn = "") {
@@ -145,7 +141,7 @@ echo "<TD>".formatOutputStr($dn)."</TD></TR>\n";
 		if ($acronym) $str .= "</ACRONYM>";
 		if ($bold) $str .= "</B>";
 		$str .= "</TD><TD CLASS=\"value\"><INPUT TYPE=\"text\" NAME=\"";
-		$str .= $attr."[]\" VALUE=\"".$value."\" SIZE=\"".INPUT_TEXT_SIZE."\">";
+		$str .= $attr."\" VALUE=\"".$value."\" SIZE=\"".INPUT_TEXT_SIZE."\">";
 		$str .= "</TD></TR>\n";
 
 		echo $str;
@@ -153,43 +149,25 @@ echo "<TD>".formatOutputStr($dn)."</TD></TR>\n";
 
 	function viewActionBar($entryExists) {
 ?><!-- ACTION BAR BEGIN -->
-<BR><TABLE CLASS="actionbar">
-	<TR CLASS="actionbar">
-	<?php
+<div class="actionBar" id="actionBar">
+	<?
 	### MODIFY ###
 	if ($entryExists) {
-		echo "
-	<TD><INPUT TYPE=\"submit\" CLASS=\"submit\" NAME=\"submit\"";
-		echo "VALUE=\"Modify\"";
-		if (ENABLE_JAVASCRIPT) echo 
-" onClick=\"javascript:this.form.chosen_action.value='Modify';\"";
-		echo "></TD>";
+?><button onclick="processEntryForm('modify_entry')">Modify</button><?
 	}
 
 	### NEW ###
 
-	echo "
-	<TD><INPUT TYPE=\"submit\" CLASS=\"submit\" NAME=\"submit\"";
-echo "VALUE=\"New\"";
-	if (ENABLE_JAVASCRIPT) echo
-" onClick=\"javascript:this.form.chosen_action.value='New';\"";
-	echo "></TD>\n";
-
+?><button onclick="processEntryForm('create_step3')">New</button><?
 	### DELETE ###
 
 	if ($entryExists) {
-		echo "
-	<TD><INPUT TYPE=\"submit\" CLASS=\"submit\" NAME=\"submit\"";
-		echo "VALUE=\"Delete\"";
-		if (ENABLE_JAVASCRIPT) echo 
-" onClick=\"javascript:this.form.chosen_action.value='Delete';\"";
-		echo "></TD>";
+?><button onclick="deleteEntry()">Delete</button><?
 	}
 ?>
-	</TR>
-</TABLE>
+</div>
 <!-- ACTION BAR END -->
-<?php
+<?
 	}
 
 	function viewInnerFooter() {
@@ -217,10 +195,10 @@ echo "VALUE=\"New\"";
 	function viewFooter($dn = "") {
 ?>
 <!-- viewFooter -->
-</TABLE>
+</table>
+</form>
 <?php $this->viewActionBar($dn); ?>
-</FORM>
-<?php
+<?
 	}
 
 	function viewTreeElement($data) {
@@ -240,7 +218,7 @@ echo "VALUE=\"New\"";
 		$iconStr = '<img src="'.IMAGES_URLPATH.'/icons/'.$iconFile.'" '.$iconSize.' border="0" alt="" class="TreeItemIcon"/>';
 
 		?>
-		<li><?=$iconStr?><a href="<?=MAINFILE?>?do=view_entry&amp;entry=<?=urlencode($dn)?>" target="right"><?=$rdn?></a><span>&nbsp;&nbsp;<sup>[<a href="<?=MAINFILE?>?do=choose_entrytype&amp;parent=<?=urlencode($dn)?>" target="right"><acronym title="Create a new entry under this entry">n</acronym></a>]</sup></span>
+		<li><?=$iconStr?><a href="" onclick="viewEntry('<?=urlencode($dn)?>'); return false;"><?=$rdn?></a><span>&nbsp;&nbsp;<sup>[<a href="" onclick="callBackEnd('create_step1', 'parent=<?=urlencode($dn)?>'); return false"><acronym title="Create a new entry under this entry">n</acronym></a>]</sup></span>
 		<?
 	}
 
