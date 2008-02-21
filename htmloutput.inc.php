@@ -134,15 +134,15 @@ echo "<TD>".formatOutputStr($dn)."</TD></TR>\n";
 			$this->bgcolor = "bgcolor2";
 
 		$str = 
-"		<TR CLASS=\"".$this->bgcolor."\"><TD CLASS=\"attr\">";
-		if ($bold) $str .= "<B>";
-		if ($acronym) $str .= "<ACRONYM title=\"".$acronym."\">";
+"		<tr class=\"".$this->bgcolor."\"><td class=\"attr\">";
+		if ($bold) $str .= "<b>";
+		if ($acronym) $str .= "<acronym title=\"".$acronym."\">";
 		$str .= $attr;
-		if ($acronym) $str .= "</ACRONYM>";
-		if ($bold) $str .= "</B>";
-		$str .= "</TD><TD CLASS=\"value\"><INPUT TYPE=\"text\" NAME=\"";
-		$str .= $attr."\" VALUE=\"".$value."\" SIZE=\"".INPUT_TEXT_SIZE."\">";
-		$str .= "</TD></TR>\n";
+		if ($acronym) $str .= "</acronym>";
+		if ($bold) $str .= "</b>";
+		$str .= "</td><td class=\"value\"><input type=\"text\" name=\"";
+		$str .= $attr."\" value=\"".$value."\" size=\"".INPUT_TEXT_SIZE."\">";
+		$str .= "<sup>[<a href='' onclick='dupObj(this.parentNode.parentNode.parentNode); return false;'><acronym title='Add one more field'>+</acronym></a>]</sup></td></tr>\n";
 
 		echo $str;
 	}
@@ -179,8 +179,7 @@ echo "<TD>".formatOutputStr($dn)."</TD></TR>\n";
 	}
 	
 	function viewTitle($text) {
-?>	<TR CLASS="bgcolor1"><TD><B><?php echo $text; ?></B></TD></TR>
-<?php
+?><tr class="bgcolor1"><td><b><?= $text; ?></b></td></tr><?
 	}
 
 	function modrdnFooter() {

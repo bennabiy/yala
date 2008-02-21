@@ -97,16 +97,6 @@ if ($submit == "Anonymous Login") {
 }
 $ldap_func = login();
 
-# Sanity checks on parameters
-if (array_key_exists("empties", $_GET)) {
-	$empties = $_GET["empties"]; 
-	if ($empties < 0) $empties = 0; elseif ($empties > 5) $empties = 5;
-}
-else
-	$empties = NULL;
-
-
-if (DEBUG) echo $empties;
 if ($do) {
 	switch ($do) {
 		case "reloadschema": flushCache($ldap_func); break;

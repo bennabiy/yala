@@ -56,8 +56,7 @@ function search() {
 # according to the schema of its objectclasses
 # If no entry is given we display an empty entry of the specified object claases
 #
-# For each attribute we'll show $empties values in addition
-function viewEntry($entry, $empties = 0, $dn = "", $objectclasses = array()) {
+function viewEntry($entry, $dn = "", $objectclasses = array()) {
 	global $attr_desc;
 
 	$ldap_func = login();
@@ -113,13 +112,9 @@ function viewEntry($entry, $empties = 0, $dn = "", $objectclasses = array()) {
 	$htmloutput = new HTMLOutput();
 	$htmloutput->viewHeader();
 	
-	# Allow adding/removing empty fields
-	# TODO We don't allow this on new-entry-mode because I'm lazy.
 	if ($entry) {
-		$str = "One <A HREF=\"".MAINFILE."?do=view_entry&amp;entry=".urlencode($entry)."&amp;empties=".($empties+1)."\">more</A> / <A HREF=\"".MAINFILE."?do=view_entry&amp;entry=".urlencode($entry)."&amp;empties=".($empties-1)."\">less</A> empty value field (for each attribute)";
-		$htmloutput->viewTitle($str);
+		$htmloutput->viewTitle($entry);
 	}
-
 
 	# Show the dn before anything else
 	# existsing-entry: get the dn from $data
@@ -175,8 +170,7 @@ function viewEntry($entry, $empties = 0, $dn = "", $objectclasses = array()) {
 			}
 
 			# Show all the existing values (if none, at least one empty!) 
-			# + $empties empty_values in addition
-			for ($j = 0; ($j < ( max($val["count"], 1) + $empties)); $j++) {
+			for ($j = 0; ($j < ( max($val["count"], 1))); $j++) {
 				
 				if ($j + 1 > $val["count"]) {
 					$value = ""; // No more values here
@@ -212,7 +206,7 @@ function create_step2($entry_type, $parent=null) {
 	else # If a specific entry type was chosen, list is in $entry_types
 		$objectclasses_list = $entry_types[$entry_type];
 
-	viewEntry("", 0, $dn, $objectclasses_list);
+	viewEntry("", $dn, $objectclasses_list);
 } # }}}
 
 # {{{ create_step3() processes the submitted form, creating a new entry

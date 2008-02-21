@@ -128,6 +128,23 @@ function callBackEnd(str, params) {
 	});
 }
 
+/* Duplicates the given object and places it right afterwards */
+function dupObj(obj) {
+	var par = obj.parentNode;
+
+	var newObj = obj.cloneNode(true);
+
+	// Find the next sibling (of the same tagName), to insert before
+	var nextObj = obj.nextSibling;
+	while (nextObj != undefined &&
+	       nextObj.nextSibling != undefined &&
+	       nextObj.tagName != obj.tagName) {
+		nextObj = nextObj.nextSibling;
+	}
+
+	par.insertBefore(newObj, nextObj);
+}
+
 function populateTree() {
 	jsutils.ajax("tree.php",
 	function (html) {
