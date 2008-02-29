@@ -29,16 +29,17 @@ function check_form(form) {
 		else
 			$image = "<img src=\"".IMAGES_URLPATH."/icons/default.png\" alt=\"".$entry_type."\">";
 ?>
-<input type="radio" onclick="g_chosenEntryType='<?=$entry_type?>'">&nbsp;<?=$image?>&nbsp;<?=$entry_type?><br>
+<input type="radio" name="entry_type" onclick="g_chosenEntryType='<?=$entry_type?>'">&nbsp;<?=$image?>&nbsp;<?=$entry_type?><br>
 <?
 	}
 
 ?>
-<div class="center"><button onclick="callBackEnd('create_step2', 'entry_type='+g_chosenEntryType+'&parent=<?=urlencode($parent)?>')">Next</button></div>
+<div class="center"><button onclick="callBackEnd('create_step2', 'entry_type='+g_chosenEntryType+'&parent=<?=urlencode($parent)?>&objectclasses=')">Next</button></div>
 
 <!-- CUSTOM entry type -->
-<hr><input type="radio" name="entry_type" value="custom">&nbsp;<img src="<?=IMAGES_URLPATH?>/icons/default.png" alt="Custom">&nbsp;custom<BR>
-<div class="center"><select name="custom_objectclasses[]" size="8" onchange="javascript:choose_entrytype_form.entry_type[<?=$count?>].checked=true;" multiple>
+<hr><input type="radio" name="entry_type" id="custom" value="custom">&nbsp;<img src="<?=IMAGES_URLPATH?>/icons/default.png" alt="Custom">&nbsp;custom<BR>
+<div class="center">
+	<select id="custom_objectclasses" size="8" onchange="document.getElementById('custom').checked=true;" multiple>
 <?
 	$names = array_keys($name2oid);
 	asort($names);
@@ -46,5 +47,6 @@ function check_form(form) {
 		echo "<option value=\"".$name."\">".$name."<br>";
 	}
 ?>
-</select></div>
-<br><div class="center"><button>Next</button></div>
+	</select>
+</div>
+<div class="center"><button onclick="callBackEnd('create_step2', 'entry_type=custom&parent=<?=urlencode($parent)?>&objectclasses='+getSelectedOptions('custom_objectclasses').join(','))">Next</button></div>

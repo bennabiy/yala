@@ -188,22 +188,17 @@ function viewEntry($entry, $dn = "", $objectclasses = array()) {
 # }}}
 
 # {{{ create_step2() displays a form for adding a new entry
-function create_step2($entry_type, $parent=null) {
+function create_step2($entry_type, $parent = null, $objectclasses_list = array()) {
 	global $entry_types;
-	$objectclasses_list = array();
 
 	# If we have the parent DN, put ",<parent DN>" as the dn
 	if ($parent) $dn = ",".$parent;
 	else
 		$dn = "";
 
-	# If custom, list of objectclasses is given as an argument
-	if ($entry_type == "custom") {
-		# TODO NOT WORKING!! GRR
-		if (!count($post_vars["custom_objectclasses"])) exitOnError(ERROR_FEW_ARGUMENTS);
-		$objectclasses_list = $post_vars["custom_objectclasses"];
-	}
-	else # If a specific entry type was chosen, list is in $entry_types
+	# If a specific entry type was chosen, 
+	# get the objectclasses list is in $entry_types
+	if ($entry_type != "custom")
 		$objectclasses_list = $entry_types[$entry_type];
 
 	viewEntry("", $dn, $objectclasses_list);
@@ -459,7 +454,7 @@ function main() {
 				create_step1($entry_types, $ldap_func, $parent);
 			break;
 			case "create_step2":
-				create_step2($_REQUEST["entry_type"], $_REQUEST["parent"]);
+				create_step2($_REQUEST["entry_type"], $_REQUEST["parent"], split(",", $_REQUEST["objectclasses"]));
 			break;
 			case "create_step3":
 				create_step3($_REQUEST["data"]);

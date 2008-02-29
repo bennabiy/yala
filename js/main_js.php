@@ -91,6 +91,7 @@ function processEntryForm(action) {
 	jsutils.ajaxPost(url, "do="+action+"&data="+JSON.stringify(data),
 		function (html) {
 			jsutils.el("mainDiv").innerHTML = html;
+			refreshTree();
 		});
 }
 
@@ -116,6 +117,19 @@ function doSearch() {
 	});
 }
 
+function getSelectedOptions(id) {
+	var output = [];
+	var el = document.getElementById(id);
+
+	for (var i = 0; i < el.options.length; i++) {
+		if (el.options[i].selected) {
+			output.push(el.options[i].value);
+		}
+	}
+
+	return output;
+}
+
 function callBackEnd(str, params) {
 	var url = "back.php?do="+str;
 	if (params != undefined)
@@ -125,7 +139,12 @@ function callBackEnd(str, params) {
 	function (html) {
 		var mainDiv = jsutils.el("mainDiv");
 		mainDiv.innerHTML = html;
+		refreshTree();
 	});
+}
+
+/* Refresh the tree by modifying only the deltas, don't re-generate */
+function refreshTree() {
 }
 
 /* Duplicates the given object and places it right afterwards */
@@ -146,11 +165,13 @@ function dupObj(obj) {
 }
 
 function populateTree() {
+	jsutils.el("treeDiv").style.visibility = 'hidden';
 	jsutils.ajax("tree.php",
 	function (html) {
 		var treeDiv = jsutils.el("treeDiv");
 		treeDiv.innerHTML = html;
 		convertTrees();
+		treeDiv.style.visibility = '';
 	});
 
 	return;

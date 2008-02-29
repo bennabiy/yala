@@ -114,7 +114,6 @@ if ($submit) { # If it's a form which was submitted (modify/del/add...)
 
 	switch ($submit) {
 		case "Modrdn": modrdn($ldap_func, $post_vars); break;
-		case "Modify": modifyEntry($ldap_func, $post_vars); break;
 		case "Anonymous Login":
 		case "Login":  break;
 		default: exitOnError(ERROR_BAD_OP, $submit);
