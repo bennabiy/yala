@@ -1,4 +1,9 @@
 // vim:ft=javascript:foldmethod=marker:
+
+/* Globals */
+var jsutils = new jsutils();
+
+
 /* {{{ jsutils class */
 function jsutils() {
 
@@ -9,14 +14,11 @@ function jsutils() {
 	this.urldecode	= urldecode;
 
 	function ajax(url, callBackFunction){
-
 		var request = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("MSXML2.XMLHTTP.3.0");
 
 		request.open("GET", url, true);
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); 
-
-		request.onreadystatechange = function(){
-
+		request.onreadystatechange = function() {
 			if (request.readyState == 4 && request.status == 200) {
 
 				if (request.responseText){
@@ -25,7 +27,7 @@ function jsutils() {
 				}
 			}
 		}
-		request.send();
+		request.send(null);
 	}
 
 	// Just like ajax() function but for POST
@@ -177,7 +179,7 @@ function populateTree() {
 	return;
 }
 
-function onload() {
+function afterLoad() {
 	populateTree();
 }
 
@@ -186,8 +188,11 @@ function viewEntry(dn) {
 	callBackEnd("view_entry", "dn="+dn);
 }
 
-/* ====== MAIN ====== */
-var currentEntry;
-var jsutils = new jsutils();
+function main() {
+	var currentEntry;
 
-document.onload = onload;
+	window.onload = function() { afterLoad(); }
+}
+
+/* ====== MAIN ====== */
+main();

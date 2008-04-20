@@ -7,8 +7,6 @@ require	"common.inc.php";
 require "ldapfunc.inc.php";
 require	"htmloutput.inc.php";
 
-$javascript = "";
-
 # {{{ flushCache() function just deletes the old cache files 
 function flushCache($ldap_func) {
 
@@ -58,66 +56,68 @@ formatOutputStr($newsuperior), -1);
 		exitOnError(ERROR_LDAP_OP_FAILED, ldap_error($ldap_func->ldap_conn));
 } # }}}
 
-##### MAIN #####
+function main() {
+	session_start();
 
-session_start();
-
-if (array_key_exists("submit", $_POST))
-	$submit		= $_POST["submit"];
-else
-	$submit = NULL;
-
-if (array_key_exists("do", $_GET))
-	$do		= $_GET["do"];
-else
-	$do = NULL;
-
-if (isset($_POST["ldap_server"])) {
-
-	# Before we use the php session feature, make sure it works :)
-	if ($_SESSION["yala"] != TRUE) exitOnError(ERROR_SESSION_SUPPORT_PROBLEM);
-
-	# If we're just after the login form:
-	$_SESSION["ldap_server"] = $_POST["ldap_server"];
-	$_SESSION["ldap_port"] = $_POST["ldap_port"];
-	$_SESSION["ldap_basedn"] = $_POST["ldap_basedn"];
-	$_SESSION["ldap_binddn"] = $_POST["ldap_binddn"];
-	$_SESSION["ldap_bindpw"] = formatInputStr($_POST["ldap_bindpw"]);
-	if (array_key_exists("ldap_tls", $_POST))
-		$_SESSION["ldap_tls"]	= TRUE;
+	if (array_key_exists("submit", $_POST))
+		$submit		= $_POST["submit"];
 	else
-		$_SESSION["ldap_tls"]	= FALSE;
-}
+		$submit = NULL;
 
-require INCLUDE_PATH."/header.inc";
+	if (array_key_exists("do", $_GET))
+		$do		= $_GET["do"];
+	else
+		$do = NULL;
 
-# If anonymous login, act as if there is no binddn nor bindpw
-if ($submit == "Anonymous Login") {
-	$_SESSION["ldap_binddn"] = ""; $_SESSION["ldap_bindpw"] = "";
-}
-$ldap_func = login();
+	if (isset($_POST["ldap_server"])) {
+		# Before we use the php session feature, make sure it works :)
+		if ($_SESSION["yala"] != TRUE) exitOnError(ERROR_SESSION_SUPPORT_PROBLEM);
 
-if ($do) {
-	switch ($do) {
-		case "reloadschema": flushCache($ldap_func); break;
-		case "modrdn_form": modrdn_form($ldap_func, $_GET["entry"]); break;
-
-		default: exitOnError(ERROR_BAD_OP, $do);
-	}
-}
-
-if ($submit) { # If it's a form which was submitted (modify/del/add...)
-	if (is_array($_POST)) {
-		# First format the posted strings
-		$post_vars = formatInputArray($_POST);
+		# If we're just after the login form:
+		$_SESSION["ldap_server"] = $_POST["ldap_server"];
+		$_SESSION["ldap_port"] = $_POST["ldap_port"];
+		$_SESSION["ldap_basedn"] = $_POST["ldap_basedn"];
+		$_SESSION["ldap_binddn"] = $_POST["ldap_binddn"];
+		$_SESSION["ldap_bindpw"] = formatInputStr($_POST["ldap_bindpw"]);
+		if (array_key_exists("ldap_tls", $_POST))
+			$_SESSION["ldap_tls"]	= TRUE;
+		else
+			$_SESSION["ldap_tls"]	= FALSE;
 	}
 
-	switch ($submit) {
-		case "Modrdn": modrdn($ldap_func, $post_vars); break;
-		case "Anonymous Login":
-		case "Login":  break;
-		default: exitOnError(ERROR_BAD_OP, $submit);
+	require INCLUDE_PATH."/header.inc";
+
+	# If anonymous login, act as if there is no binddn nor bindpw
+	if ($submit == "Anonymous Login") {
+		$_SESSION["ldap_binddn"] = ""; $_SESSION["ldap_bindpw"] = "";
 	}
+	$ldap_func = login();
+
+	if ($do) {
+		switch ($do) {
+			case "reloadschema": flushCache($ldap_func); break;
+			case "modrdn_form": modrdn_form($ldap_func, $_GET["entry"]); break;
+
+			default: exitOnError(ERROR_BAD_OP, $do);
+		}
+	}
+
+	if ($submit) { # If it's a form which was submitted (modify/del/add...)
+		if (is_array($_POST)) {
+			# First format the posted strings
+			$post_vars = formatInputArray($_POST);
+		}
+
+		switch ($submit) {
+			case "Modrdn": modrdn($ldap_func, $post_vars); break;
+			case "Anonymous Login":
+			case "Login":  break;
+			default: exitOnError(ERROR_BAD_OP, $submit);
+		}
+	}
+
+	require INCLUDE_PATH."/footer.inc";
 }
 
-require INCLUDE_PATH."/footer.inc";
+##### MAIN #####
+main();
