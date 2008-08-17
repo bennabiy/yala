@@ -28,6 +28,44 @@ function create_step1($entry_types, $ldap_func, $parent) {
 	require INCLUDE_PATH."/choose_entrytype_form.inc";
 } # }}}
 
+# {{{ modrdn_form() displays the rename dn form
+function modrdn_form($entry) {
+	$entry = formatInputStr($entry);
+	if (eregi("^([^,]+),(.*)$", $entry, $regs)) {
+		$rdn		= $regs[1];
+		$superior	= $regs[2];
+	}
+	include INCLUDE_PATH."/modrdn_form.inc";
+} # }}}
+
+# {{{ modrdn() - Modify the RDN and/or the Parent ( = rename )
+function modrdn($json) {
+	$htmloutput	= new HTMLOutput;
+	$ldap_func	= login();
+
+	$json		= formatInputStr($json);
+	$data		= json_decode($json, true);
+
+	$dn		= $data["dn"][0];
+	$newrdn		= $data["newrdn"][0];
+	$deleteoldrdn	= $data["deleteoldrdn"][0];
+	$newsuperior	= $data["newsuperior"][0];
+
+	$result = ldap_rename($ldap_func->ldap_conn, $dn, $newrdn, $newsuperior, $deleteoldrdn);
+	$htmloutput->resultsHeader($dn);
+	$htmloutput->resultsTitle("Modify DN..");
+	$htmloutput->resultsInnerHeader();
+	$htmloutput->resultsInnerRow("dn", formatOutputStr($dn), -1);
+	$htmloutput->resultsInnerRow("newrdn", formatOutputStr($newrdn), -1);
+	$htmloutput->resultsInnerRow("deleteoldrdn", formatOutputStr($deleteoldrdn), -1);
+	$htmloutput->resultsInnerRow("newsuperior", formatOutputStr($newsuperior), -1);
+	$htmloutput->resultsInnerRow(NULL, NULL, $result);
+	$htmloutput->resultsInnerFooter();
+	$htmloutput->resultsFooter();
+	if (!$result)
+		exitOnError(ERROR_LDAP_OP_FAILED, ldap_error($ldap_func->ldap_conn));
+} # }}}
+
 # {{{ search() search and return the results as an array
 function search() {
 	$ldap_func = login();
@@ -471,6 +509,15 @@ function main() {
 			case "modify_entry":
 				modifyEntry($_REQUEST["data"]);
 			break;
+
+			case "modrdn_form":
+				modrdn_form($_REQUEST["dn"]);
+			break;
+
+			case "modrdn":
+				modrdn($_REQUEST["data"]);
+			break;
+
 		}
 	}
 

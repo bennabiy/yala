@@ -59,10 +59,6 @@ class HTMLOutput {
 <?php
 	}
 
-
-
-
-
 	function viewHeader() {
 ?><!-- viewHeader -->
 <form name="yalaForm" id="yalaForm">
@@ -70,10 +66,12 @@ class HTMLOutput {
 <?
 	}
 
-	function modrdnHeader($dn = "") {
+	function modrdnHeader($title, $dn) {
 ?><!-- modrdnHeader -->
-<TABLE CLASS="view-outer" WIDTH="98%">
-	<TR CLASS="dnbgcolor"><TD CLASS="view-dnattr" ALIGN="center"><?php echo $dn; ?></TD></TR>
+<form name="yalaForm" id="yalaForm">
+<input type="hidden" name="dn" value="<?= $dn; ?>">
+<table class="view-outer" width="98%">
+	<tr class="dnbgcolor"><td class="view-dnattr" align="center"><?= $title; ?></td></tr>
 <?php
 	}
 
@@ -86,22 +84,22 @@ class HTMLOutput {
 	}
 
 	function viewInnerRowDN($dn) {
-		echo "
-		<TR CLASS=\"bgcolor1\"><TD CLASS=\"view-dnattr\">";
-echo "<ACRONYM TITLE=\"Distinguished Name\">dn</ACRONYM>&nbsp;<FONT";
-echo " SIZE=\"-2\">[&nbsp;<A HREF=\"".MAINFILE."?do=modrdn_form&amp;entry=";
-echo urlencode($dn)."\">Modify DN</A>&nbsp;]&nbsp;</FONT></TD>";
-echo "<TD><INPUT TYPE=\"text\" NAME=\"dn\" VALUE=\"".formatOutputStr($dn);
-echo "\" SIZE=\"".INPUT_TEXT_SIZE."\"></TD></TR>\n";
+?>
+<tr class="bgcolor1">
+	<td class="view-dnattr"><acronym title="Distinguished Name">dn</acronym></td>
+	<td><input type="text" name="dn" value="<?=formatOutputStr($dn); ?>" size="<?=INPUT_TEXT_SIZE?>">&nbsp;<span class="smaller">[&nbsp;<a href="" onclick="callBackEnd('modrdn_form', 'dn=<?=urlencode($dn)?>'); return false">Modify</a>&nbsp;]</span>&nbsp;</td>
+</tr>
+<?
 
 	}
 
 	function modrdnInnerRowDN($dn) {
-		echo "
-		<TR CLASS=\"bgcolor1\"><TD CLASS=\"view-dnattr\">";
-echo "<ACRONYM title=\"The DN before the modifictation\">dn</ACRONYM></TD>";
-echo "<TD>".formatOutputStr($dn)."</TD></TR>\n";
-
+?>
+<tr class="bgcolor1">
+	<td class="view-dnattr"><acronym title="The DN before the modifictation">dn</acronym></td>
+	<td><?=formatOutputStr($dn)?></td>
+</tr>
+<?
 	}
 
 
@@ -113,16 +111,19 @@ echo "<TD>".formatOutputStr($dn)."</TD></TR>\n";
 		else
 			$this->bgcolor = "bgcolor2";
 
-		$str = 
-"		<TR CLASS=\"".$this->bgcolor."\"><TD CLASS=\"attr\">";
-		if ($acronym) $str .= "<ACRONYM title=\"".$acronym."\">";
-		$str .= $attr;
-		if ($acronym) $str .= "</ACRONYM>";
-		$str .= "</TD><TD CLASS=\"value\"><INPUT TYPE=\"text\" NAME=\"";
-		$str .= $attr."\" VALUE=\"".$value."\" SIZE=\"".INPUT_TEXT_SIZE."\">";
-		$str .= "</TD></TR>\n";
+		$acronym_start = "";
+		$acronym_end = "";
+		if ($acronym) {
+			$acronym_start = "<acronym title=\"".$acronym."\">";
+			$acronym_end = "</acronym>";
+		}
+?>
+<tr class="<?= $this->bgcolor ?>">
+	<td class="attr"><?=$acronym_start?><?=$attr?><?=$acronym_end?></td>
+	<td class="value"><input type="text" name="<?=$attr?>" value="<?=$value?>" size="<?=INPUT_TEXT_SIZE?>"></td>
+</tr>
 
-		echo $str;
+<?
 	}
 
 	function viewInnerRow($attr, $value, $bold, $acronym) {
@@ -142,7 +143,7 @@ echo "<TD>".formatOutputStr($dn)."</TD></TR>\n";
 		if ($bold) $str .= "</b>";
 		$str .= "</td><td class=\"value\"><input type=\"text\" name=\"";
 		$str .= $attr."\" value=\"".$value."\" size=\"".INPUT_TEXT_SIZE."\">";
-		$str .= "<sup>[<a href='' onclick='dupObj(this.parentNode.parentNode.parentNode); return false;'><acronym title='Add one more field'>+</acronym></a>]</sup></td></tr>\n";
+		$str .= "<sup>[<a href='' onclick='dupObj(this.parentNode.parentNode.parentNode, true); return false;'><acronym title='Add one more field'>+</acronym></a>]</sup></td></tr>\n";
 
 		echo $str;
 	}
@@ -173,8 +174,8 @@ echo "<TD>".formatOutputStr($dn)."</TD></TR>\n";
 	function viewInnerFooter() {
 ?>
 	<!-- viewInnerFooter -->
-	</TABLE>
-	</TD></TR>
+	</table>
+	</td></tr>
 <?php
 	}
 	
@@ -185,10 +186,15 @@ echo "<TD>".formatOutputStr($dn)."</TD></TR>\n";
 	function modrdnFooter() {
 ?>
 <!-- modrdnFooter -->
-</TABLE>
-<CENTER><INPUT TYPE="submit" NAME="submit" VALUE="Modrdn"></CENTER>
-</FORM>
-<CENTER><FONT SIZE="-1">TIP: Put the mouse over an unknown term in order to get help</FONT></CENTER><?php
+</table>
+</form>
+<div class="actionBar">
+<button onclick="processEntryForm('modrdn')">Modrdn</button>
+</div>
+
+<div class="center smaller">Place the mouse over an unknown term in order to get help</center>
+
+<?
 	}
 
 	function viewFooter($dn = "") {

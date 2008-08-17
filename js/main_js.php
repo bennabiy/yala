@@ -147,10 +147,14 @@ function callBackEnd(str, params) {
 
 /* Refresh the tree by modifying only the deltas, don't re-generate */
 function refreshTree() {
+	// Temporary shit
+	populateTree();
+
+	return;
 }
 
 /* Duplicates the given object and places it right afterwards */
-function dupObj(obj) {
+function dupObj(obj, cleanupInput) {
 	var par = obj.parentNode;
 
 	var newObj = obj.cloneNode(true);
@@ -161,6 +165,13 @@ function dupObj(obj) {
 	       nextObj.nextSibling != undefined &&
 	       nextObj.tagName != obj.tagName) {
 		nextObj = nextObj.nextSibling;
+	}
+
+	if (cleanupInput) {
+		// Clear the first input field in this object, if exists
+		var NodeList = newObj.getElementsByTagName("input");
+		if (NodeList.length > 0)
+			NodeList[0].value = "";
 	}
 
 	par.insertBefore(newObj, nextObj);

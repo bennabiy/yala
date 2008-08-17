@@ -20,42 +20,6 @@ function flushCache($ldap_func) {
 
 } # }}}
 
-# {{{ modrdn_form() displays a form for modifying the dn
-function modrdn_form($ldap_func, $entry) {
-	$entry = formatInputStr($entry);
-	if (eregi("^([^,]+),(.*)$", $entry, $regs)) {
-		$rdn		= $regs[1];
-		$superior	= $regs[2];
-	}
-	include INCLUDE_PATH."/modrdn_form.inc";
-
-} # }}}
-
-# {{{ modrdn() - Modify the RDN and/or the Parent ( = rename )
-function modrdn($ldap_func, $post_vars) {
-	$htmloutput = new HTMLOutput;
-	$entry		= formatInputStr($post_vars["entry"]);
-	$newrdn		= formatInputStr($post_vars["newrdn"]);
-	$deleteoldrdn	= formatInputStr($post_vars["deleteoldrdn"]);
-	$newsuperior	= formatInputStr($post_vars["newsuperior"]);
-
-	$result = ldap_rename($ldap_func->ldap_conn, $entry, $newrdn, $newsuperior, $deleteoldrdn);
-	$htmloutput->resultsHeader($entry);
-	$htmloutput->resultsTitle("Modify DN..");
-	$htmloutput->resultsInnerHeader();
-	$htmloutput->resultsInnerRow("dn", formatOutputStr($entry), -1);
-	$htmloutput->resultsInnerRow("newrdn", formatOutputStr($newrdn), -1);
-	$htmloutput->resultsInnerRow("deleteoldrdn",
-formatOutputStr($deleteoldrdn), -1);
-	$htmloutput->resultsInnerRow("newsuperior",
-formatOutputStr($newsuperior), -1);
-	$htmloutput->resultsInnerRow(NULL, NULL, $result);
-	$htmloutput->resultsInnerFooter();
-	$htmloutput->resultsFooter();
-	if (!$result)
-		exitOnError(ERROR_LDAP_OP_FAILED, ldap_error($ldap_func->ldap_conn));
-} # }}}
-
 function main() {
 	session_start();
 
@@ -96,7 +60,6 @@ function main() {
 	if ($do) {
 		switch ($do) {
 			case "reloadschema": flushCache($ldap_func); break;
-			case "modrdn_form": modrdn_form($ldap_func, $_GET["entry"]); break;
 
 			default: exitOnError(ERROR_BAD_OP, $do);
 		}
@@ -109,7 +72,6 @@ function main() {
 		}
 
 		switch ($submit) {
-			case "Modrdn": modrdn($ldap_func, $post_vars); break;
 			case "Anonymous Login":
 			case "Login":  break;
 			default: exitOnError(ERROR_BAD_OP, $submit);

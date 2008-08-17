@@ -133,11 +133,13 @@ function login() {
 
 # {{{ logout() - deletes the cookies (Session info..)
 function logout() {
-	global $javascript;
-	if (session_destroy()) 
-		echo "Logged out, click <A HREF=\"".MAINFILE."\" TARGET=\"right\">here</A> to login again...<BR>";
+	if (session_destroy()) {
+?>
+Logged out, click <a href="">here</a> to login again...
+<?
+	}
 	else
-		echo "Error logging out!<BR>";
+		echo "Error logging out!"; // Shouldn't really happen..
 } # }}}
 
 # {{{ removeDupAttributes() takes a MayMust array, and removes duplicate items

@@ -13,7 +13,8 @@ TR.dnbgcolor { background-color: #B5BFEF; }
 TR.bgcolor1  { background-color: #C5CFEF; }
 TR.bgcolor2  { background-color: #E5EFFF; }
 TR.actionbar { text-align: center; }
-TD.view-dnattr { color: #000066; font-weight: bold; font-size: large; }
+TD.view-dnattr { color: #000066; font-weight: bold; font-size: 110% }
+SPAN.smaller { font-weight: normal; font-size: 75% }
 TD.attr	  { color: #222266; width: 35%; border: thin solid white; }
 TD.value  { color: #222266; border: thin solid white; }
 TD.dense	{ padding: 0; border-spacing: 0; }

@@ -22,9 +22,6 @@ define("CACHE_PATH",	"/tmp");
 # URL PATHS
 define("IMAGES_URLPATH",	"images");
 
-# PHP filenames. usually shouldn't be changed
-define("MAINFILE", "main.php");
-
 # Icon to display when no matching icon was found (inside IMAGES_PATH)
 define("DEFAULT_ICON", "default.png");
 
@@ -44,10 +41,6 @@ define("CACHE_EXPIRES", 60*5);
 #
 # DESIGN
 #
-
-# Enable Javascript, default on
-# Disabling this will make YALA less nice.
-define("ENABLE_JAVASCRIPT", TRUE);
 
 # Size of text input
 define("INPUT_TEXT_SIZE", 40);
