@@ -147,8 +147,7 @@ function callBackEnd(str, params) {
 
 /* Refresh the tree by modifying only the deltas, don't re-generate */
 function refreshTree() {
-	// Temporary shit
-	populateTree();
+	// Temporarily does nothing, refreshing the dynamic tree is no easy :(
 
 	return;
 }

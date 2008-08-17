@@ -87,7 +87,7 @@ class HTMLOutput {
 ?>
 <tr class="bgcolor1">
 	<td class="view-dnattr"><acronym title="Distinguished Name">dn</acronym></td>
-	<td><input type="text" name="dn" value="<?=formatOutputStr($dn); ?>" size="<?=INPUT_TEXT_SIZE?>">&nbsp;<span class="smaller">[&nbsp;<a href="" onclick="callBackEnd('modrdn_form', 'dn=<?=urlencode($dn)?>'); return false">Modify</a>&nbsp;]</span>&nbsp;</td>
+	<td><input type="text" name="dn" value="<?=formatOutputStr($dn); ?>" size="<?=INPUT_TEXT_SIZE?>">&nbsp;<span class="smaller">[&nbsp;<a tabIndex=998 href="" onclick="callBackEnd('modrdn_form', 'dn=<?=urlencode($dn)?>'); return false">Modify</a>&nbsp;]</span>&nbsp;</td>
 </tr>
 <?
 
@@ -143,7 +143,7 @@ class HTMLOutput {
 		if ($bold) $str .= "</b>";
 		$str .= "</td><td class=\"value\"><input type=\"text\" name=\"";
 		$str .= $attr."\" value=\"".$value."\" size=\"".INPUT_TEXT_SIZE."\">";
-		$str .= "<sup>[<a href='' onclick='dupObj(this.parentNode.parentNode.parentNode, true); return false;'><acronym title='Add one more field'>+</acronym></a>]</sup></td></tr>\n";
+		$str .= "<sup>[<a tabindex=999 href='' onclick='dupObj(this.parentNode.parentNode.parentNode, true); return false;'><acronym title='Add one more field'>+</acronym></a>]</sup></td></tr>\n";
 
 		echo $str;
 	}
