@@ -1,3 +1,25 @@
+Version 0.99a (18/08/2008) - Major changes, AJAX, unstable
+----------------------------------------------------------
+[FEATURE]  Tree is now quick and dynamic (rewritten from scratch)
+
+[FEATURE]  Move all operations to AJAX style
+           (create entry, view entry, delete entry, search, modrdn)
+
+[FEATURE]  Allow multi-values on-the-fly, the nice way ([+] button)
+
+[NOTE]     This version introduces lots of new javascript. It's cool,
+           but might be buggy yet. Please help to hunt bugs.
+
+[NOTE]     Non-javascript browsers are no more supported, aka links.
+           Sorry, modern web technologies won :(
+
+[NOTE]     MAINFILE / ENABLE_JAVASCRIPT config parameters are no more in use
+
+[NOTE]     Tree does not auto-refresh when changing stuff
+           It'll be addressed by next version.
+
+
+
 Version 0.35b (17/06/2007) - Bugfix
 -----------------------------------
 [FIX] Empty values showed lots of PHP errors.

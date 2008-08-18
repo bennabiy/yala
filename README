@@ -2,26 +2,28 @@ YALA (Yet Another LDAP Administrator)
 -------------------------------------
 
 WHAT IS YALA?
-YALA is a web-based LDAP administration GUI. The idea is to simplify 
+
+YALA is a web-based LDAP administration GUI. The goal is to simplify 
 the directory administration with a graphical interface and neat 
-features, though to stay a general-purpose directory manager.
+features, though to stay a simple, general-purpose directory manager.
 
-The goal is to simplify the administration but not to make the YALA user
-stupid: to achieve this, we try to show the user what YALA does behind the
-scenes, what it sends to the server (unlike Micro$oft Active Directory, for
-example).
+A secondary goal is not to make the YALA user stupid: to achieve this,
+we try to show the user what YALA does behind the scenes, what it sends
+to the server (unlike MS Active Directory, for example), and use the
+original LDAP terms.
 
 
+------------------------------------------------------------------------------
 FEATURES
+
 - Clear and Simple interface.
 - Cross-Platform: YALA can be accessed from any platform using any modern 
   browser, and the server-side should work on most OSes & Web Servers.
-- Cute javascript to improve the web-interface, which can be set off if you
-  would like.
-- Theoretically works with any LDAP server, see REQUIREMENTS section for list
-  of supported LDAP servers.
-- Super mega advanced schema reader pro turbo: YALA Reads the schema from
-  the LDAP server and gets lots of useful information off it.
+- Advanced JavaScript for smoother user experience (AJAX)
+- Standard. In theory YALA supports any LDAP server.
+  See REQUIREMENTS section for list of supported servers.
+- Uber schema reader pro (tm): YALA reads the schema remotely from the LDAP
+  server.
 - Entry Types recognition: You can configure YALA to recognize an entry of
   objectclasses X & Y, for example, as a user entry, have a special icon for 
   it, and allow simple creation of new entries of this type (i.e. add a new 
@@ -30,20 +32,23 @@ FEATURES
   server supports it.
 
 
-
+------------------------------------------------------------------------------
 REQUIREMENTS
 
 Server Side:
-- PHP >= 4.1.0 with LDAP support. If you compile php yourself, you should 
-  enable LDAP support ("./configure --help | grep -i ldap"..)
-  If getting the php as binary, make sure you have also ldap support.
-  (On debian you need to apt-get php4-ldap or php5-ldap, for example)
+- PHP5 with LDAP support. depends how you got your PHP installed:
+  * Using the native PHP on your favorite Linux distro (recommended):
+    - Debian/Ubuntu: apt-get install php5-ldap
+    - CentOS/RedHat: yum install php-ldap
 
-  Note that you'll need LDAP libraries installed on your system in order to 
-  make PHP support LDAP.
+  * Installing from source: enable LDAP support in compile time: 
+    i.e., "./configure --help | grep -i ldap"
+
+  Note that you'll need LDAP libraries installed on your system.
+  apt-get or yum would take care of it automagically.
 
 
-- Theoretically YALA should work on ANY platform under ANY web-server
+- In theory, YALA should work on ANY platform under ANY web-server
   that supports PHP. It is known to work well on:
   Linux   + Apache
   Solaris + Apache
@@ -59,22 +64,32 @@ Server Side:
   
 
 Client Side:
-- The only requirement is a web browser with FRAMES & COOKIE support.
-  Best works on modern web browsers with javascript support, though we use 
-  standard HTML and javascript can be turned off, so YALA should be able to 
-  work even on the 'links' browser.  (lynx does not support frames)
+- The only requirement is a modern web browser, for Cookies & JavaScript
+  support.
 
   PNG support is recommended. Any modern browser should support it.
 
 
+------------------------------------------------------------------------------
 INSTALLATION
+
 See the 'INSTALL' file.
 
 
+SECURITY
+------------------------------------------------------------------------------
+
+See the 'README.security' file.
+
+
+------------------------------------------------------------------------------
 LICENSE
+
 YALA is licensed under the GPL, see the 'COPYING' file.
 
 
+------------------------------------------------------------------------------
 CONTACT/AUTHOR
+
 For any comment/suggestion/bugs/money, feel free to mail me to
 oren at held.org.il
