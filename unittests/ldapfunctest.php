@@ -1,5 +1,7 @@
 <?php
 require_once 'PHPUnit/Framework.php';
+require '../config.inc.php';
+require '../general.inc.php';
 require '../ldapfunc.inc.php';
 
 define("HOST", "");
