@@ -8,27 +8,28 @@
 
 class HTMLOutput {
 
-	var $bgcolor;
+	private $bgcolor;
 
-	function HTMLOutput() {
+	# ========================================
+
+	public function __construct() {
 	}
 
-	function resultsHeader($dn) {
+	public function resultsHeader($dn) {
 ?><!-- resultsHeader -->
 <TABLE CLASS="results-outer" WIDTH="98%">
 	<TR CLASS="dnbgcolor"><TD CLASS="view-dnattr" ALIGN="center"><?php echo $dn; ?></TD></TR>
 <?php
 	}
 
-	function resultsInnerHeader() {
+	public function resultsInnerHeader() {
 ?>	<!-- resultsInnerHeader -->
 	<TR><TD>
 	<TABLE CLASS="results-inner" WIDTH="100%">
 <?php
 	}
 
-
-	function resultsInnerRow($attr, $value, $status) {
+	public function resultsInnerRow($attr, $value, $status) {
 		if (!$attr) $attr = "&nbsp;";
 		if (!$value) $value = "&nbsp;";
 ?>		<TR><TD CLASS="results-inner" WIDTH="40%"><?php echo $attr; ?></TD><TD CLASS="results-inner" WIDTH="40%"><?php echo $value; ?></TD><TD CLASS=<?php
@@ -41,32 +42,32 @@ class HTMLOutput {
 <?php
 	}
 
-	function resultsInnerFooter() {
+	public function resultsInnerFooter() {
 ?>	</TABLE>
 	</TD></TR>
 	<!-- resultsInnerFooter -->
 <?php
 	}
 	
-	function resultsTitle($text) {
+	public function resultsTitle($text) {
 ?>	<TR CLASS="bgcolor1"><TD><B><?php echo $text; ?></B></TD></TR>
 <?php
 	}
 
-	function resultsFooter() {
+	public function resultsFooter() {
 ?></TABLE>
 <!-- resultsFooter -->
 <?php
 	}
 
-	function viewHeader() {
+	public function viewHeader() {
 ?><!-- viewHeader -->
 <form name="yalaForm" id="yalaForm">
 <table class="view-outer" width="98%">
 <?
 	}
 
-	function modrdnHeader($title, $dn) {
+	public function modrdnHeader($title, $dn) {
 ?><!-- modrdnHeader -->
 <form name="yalaForm" id="yalaForm">
 <input type="hidden" name="dn" value="<?= $dn; ?>">
@@ -76,14 +77,14 @@ class HTMLOutput {
 	}
 
 
-	function viewInnerHeader() {
+	public function viewInnerHeader() {
 ?>	<!--viewInnerHeader -->
 	<TR><TD>
 	<TABLE CLASS="view-inner" WIDTH="100%">
 <?php
 	}
 
-	function viewInnerRowDN($dn) {
+	public function viewInnerRowDN($dn) {
 ?>
 <tr class="bgcolor1">
 	<td class="view-dnattr"><acronym title="Distinguished Name">dn</acronym></td>
@@ -93,7 +94,7 @@ class HTMLOutput {
 
 	}
 
-	function modrdnInnerRowDN($dn) {
+	public function modrdnInnerRowDN($dn) {
 ?>
 <tr class="bgcolor1">
 	<td class="view-dnattr"><acronym title="The DN before the modifictation">dn</acronym></td>
@@ -103,7 +104,7 @@ class HTMLOutput {
 	}
 
 
-	function modrdnInnerRow($attr, $value, $acronym) {
+	public function modrdnInnerRow($attr, $value, $acronym) {
 
 		# Very stupid color changing
 		if (isset($this->bgcolor) && $this->bgcolor == "bgcolor2") 
@@ -126,7 +127,7 @@ class HTMLOutput {
 <?
 	}
 
-	function viewInnerRow($attr, $value, $bold, $acronym) {
+	public function viewInnerRow($attr, $value, $bold, $acronym) {
 
 		# Very stupid color changing
 		if (isset($this->bgcolor) && $this->bgcolor == "bgcolor2") 
@@ -148,7 +149,7 @@ class HTMLOutput {
 		echo $str;
 	}
 
-	function viewActionBar($entryExists) {
+	public function viewActionBar($entryExists) {
 ?><!-- ACTION BAR BEGIN -->
 <div class="actionBar" id="actionBar">
 	<?
@@ -171,7 +172,7 @@ class HTMLOutput {
 <?
 	}
 
-	function viewInnerFooter() {
+	public function viewInnerFooter() {
 ?>
 	<!-- viewInnerFooter -->
 	</table>
@@ -179,11 +180,11 @@ class HTMLOutput {
 <?php
 	}
 	
-	function viewTitle($text) {
+	public function viewTitle($text) {
 ?><tr class="bgcolor1"><td><b><?= $text; ?></b></td></tr><?
 	}
 
-	function modrdnFooter() {
+	public function modrdnFooter() {
 ?>
 <!-- modrdnFooter -->
 </table>
@@ -197,7 +198,7 @@ class HTMLOutput {
 <?
 	}
 
-	function viewFooter($dn = "") {
+	public function viewFooter($dn = "") {
 ?>
 <!-- viewFooter -->
 </table>
@@ -206,15 +207,16 @@ class HTMLOutput {
 <?
 	}
 
-	function viewTreeElement($data) {
+	public function viewTreeElement($data) {
 		global $tree;
 
 		$dn = $data["dn"];
 		$rdn = mkRdn($dn);
 		$entryType = $data["entryType"];
-		if (isset($tree->iconsHash[$entryType])) {
-			$iconFile = $tree->iconsHash[$entryType]["filename"];
-			$iconSize = $tree->iconsHash[$entryType]["size"];
+		$iconsHash = $tree->getIconsHash();
+		if (isset($iconsHash[$entryType])) {
+			$iconFile = $iconsHash[$entryType]["filename"];
+			$iconSize = $iconsHash[$entryType]["size"];
 		}
 		else {
 			$iconFile = DEFAULT_ICON;
@@ -227,7 +229,7 @@ class HTMLOutput {
 		<?
 	}
 
-	function viewTree($treeArray) {
+	public function viewTree($treeArray) {
 		for ($i = 0; $i < $treeArray["count"]; $i++) {
 
 			$this->viewTreeElement($treeArray[$i]);
@@ -242,5 +244,18 @@ class HTMLOutput {
 				print "</ul>";
 			}
 		}
+	}
+
+	public function errorDialog($ex) {
+?>
+<!-- ERROR DIALOG START -->
+<div>
+<div class="center">
+	<img src="images/error.png">
+</div>
+<div class="center"><?="Error #".$ex->getCode().": ".getErrString($ex->getCode(), $ex->getMessage());?></div>
+</div>
+<!-- ERROR DIALOG END -->
+<?
 	}
 }

@@ -51,7 +51,7 @@ function modrdn($json) {
 	$deleteoldrdn	= $data["deleteoldrdn"][0];
 	$newsuperior	= $data["newsuperior"][0];
 
-	$result = ldap_rename($ldap_func->ldap_conn, $dn, $newrdn, $newsuperior, $deleteoldrdn);
+	$result = ldap_rename($ldap_func->getConn(), $dn, $newrdn, $newsuperior, $deleteoldrdn);
 	$htmloutput->resultsHeader($dn);
 	$htmloutput->resultsTitle("Modify DN..");
 	$htmloutput->resultsInnerHeader();
@@ -63,7 +63,7 @@ function modrdn($json) {
 	$htmloutput->resultsInnerFooter();
 	$htmloutput->resultsFooter();
 	if (!$result)
-		exitOnError(ERROR_LDAP_OP_FAILED, ldap_error($ldap_func->ldap_conn));
+		throw new Exception(ldap_error($ldap_func->getConn()), ERROR_LDAP_OP_FAILED);
 } # }}}
 
 # {{{ search() search and return the results as an array
@@ -75,7 +75,7 @@ function search() {
 	$scope  = $_REQUEST["scope"];
 
 	if (!$binddn || !$filter || !$scope)
-		exitOnError(ERROR_FEW_ARGUMENTS);
+		throw new Exception("", ERROR_FEW_ARGUMENTS);
 
 	$info = $ldap_func->search($binddn, $filter, $scope);
 
@@ -101,7 +101,7 @@ function viewEntry($entry, $dn = "", $objectclasses = array()) {
 
 	# Arg check
 	if ( (!isset($ldap_func)) || (!$entry && !count($objectclasses)) )
-		exitOnError(ERROR_FEW_ARGUMENTS);
+		throw new Exception("", ERROR_FEW_ARGUMENTS);
 
 	$data = array();
 	$attributes["must"] = array();
@@ -113,8 +113,13 @@ function viewEntry($entry, $dn = "", $objectclasses = array()) {
 	$ldap_func->getSchemaHash_attributeTypes($attributes2oid, $schema_attributetypes);
 
 	if ($entry) { # Existing entry; read it.
-		$sr = ldap_read($ldap_func->ldap_conn, formatInputStr($entry), "(objectclass=*)") or exitOnError(ERROR_LDAP_CANT_SEARCH);
-		$data = ldap_get_entries($ldap_func->ldap_conn, $sr) or exitOnError(ERROR_LDAP_CANT_SEARCH);
+		$sr = ldap_read($ldap_func->getConn(), formatInputStr($entry), "(objectclass=*)");
+		if (!$sr)
+			throw new Exception("", ERROR_LDAP_CANT_SEARCH);
+
+		$data = ldap_get_entries($ldap_func->getConn(), $sr);
+		if (!$data)
+			throw new Exception("", ERROR_LDAP_CANT_SEARCH);
 
 	}
 	else { # Empty entry; create a fake entry with objectclasses coming from user input ($objectclasses)
@@ -278,12 +283,12 @@ function create_step3($json) {
 			$htmloutput->resultsInnerRow($attr, formatOutputStr($value), -1);
 		}
 	}
-	$result = @ldap_add($ldap_func->ldap_conn, $dn, $entry);
+	$result = @ldap_add($ldap_func->getConn(), $dn, $entry);
 	$htmloutput->resultsInnerRow(NULL, NULL, $result);
 	$htmloutput->resultsInnerFooter();
 	$htmloutput->resultsFooter();
 	if (!$result) 
-		exitOnError(ERROR_LDAP_OP_FAILED, ldap_error($ldap_func->ldap_conn));
+		throw new Exception(ldap_error($ldap_func->getConn()), ERROR_LDAP_OP_FAILED);
 
 } # }}}
 
@@ -294,7 +299,7 @@ function deleteEntry($dn) {
 	
 	$dn = formatInputStr($dn);
 
-	$result = @ldap_delete($ldap_func->ldap_conn, $dn);
+	$result = @ldap_delete($ldap_func->getConn(), $dn);
 	$htmloutput->resultsHeader($dn);
 	$htmloutput->resultsTitle("Deleting entry..");
 	$htmloutput->resultsInnerHeader();
@@ -303,7 +308,7 @@ function deleteEntry($dn) {
 	$htmloutput->resultsInnerFooter();
 	$htmloutput->resultsFooter();
 	if (!$result)
-		exitOnError(ERROR_LDAP_OP_FAILED, ldap_error($ldap_func->ldap_conn));
+		throw new Exception(ldap_error($ldap_func->getConn()), ERROR_LDAP_OP_FAILED);
 }
 # }}}
 
@@ -326,11 +331,17 @@ function modifyEntry($json) {
 	$replace_hash = array();
 
 	if (!$ldap_func || !is_array($data))
-		exitOnError(ERROR_FEW_ARGUMENTS);
+		throw new Exception("", ERROR_FEW_ARGUMENTS);
 
-	$sr = ldap_read($ldap_func->ldap_conn, $dn, "(objectClass=*)") or exitOnError(ERROR_LDAP_CANT_SEARCH);
-	$entry = ldap_first_entry($ldap_func->ldap_conn, $sr) or exitOnError(ERROR_LDAP_CANT_SEARCH);
-	$attributes = ldap_get_attributes($ldap_func->ldap_conn, $entry);
+	$sr = ldap_read($ldap_func->getConn(), $dn, "(objectClass=*)");
+	if (!$sr)
+		throw new Exception("", ERROR_LDAP_CANT_SEARCH);
+
+	$entry = ldap_first_entry($ldap_func->getConn(), $sr);
+	if (!$entry)
+		throw new Exception("", ERROR_LDAP_CANT_SEARCH);
+
+	$attributes = ldap_get_attributes($ldap_func->getConn(), $entry);
 
 
 	#
@@ -355,7 +366,7 @@ function modifyEntry($json) {
 			continue;
 		}
 
-		$ldap_values = ldap_get_values($ldap_func->ldap_conn, $entry, $attr);
+		$ldap_values = ldap_get_values($ldap_func->getConn(), $entry, $attr);
 
 		foreach ($posted_values as $posted_value) {
 			# Skip empty values
@@ -378,7 +389,7 @@ function modifyEntry($json) {
 	# remove it from LDAP..
 	for ($i = 0; $i < $attributes["count"]; $i++) {
 		$attr = $attributes[$i];
-		$ldap_values = ldap_get_values($ldap_func->ldap_conn, $entry, $attr);
+		$ldap_values = ldap_get_values($ldap_func->getConn(), $entry, $attr);
 
 		for ($j = 0; $j < $ldap_values["count"]; $j++) {
 
@@ -444,11 +455,11 @@ function modifyEntry($json) {
 				$entry[$attr] = $value;
 
 				switch($op) {
-					case "del": $result = @ldap_mod_del($ldap_func->ldap_conn, $dn, $entry);
+					case "del": $result = @ldap_mod_del($ldap_func->getConn(), $dn, $entry);
 					break;
-					case "add": $result = @ldap_mod_add($ldap_func->ldap_conn, $dn, $entry);
+					case "add": $result = @ldap_mod_add($ldap_func->getConn(), $dn, $entry);
 					break;
-					case "replace": $result = @ldap_mod_replace($ldap_func->ldap_conn, $dn, $entry);
+					case "replace": $result = @ldap_mod_replace($ldap_func->getConn(), $dn, $entry);
 					break;
 				}
 				$htmloutput->resultsInnerRow($attr,
@@ -465,7 +476,7 @@ formatOutputStr($value), $result);
 "	<TR><TD ALIGN=\"center\">Nothing was modified!</TD</TR>\n";
 	$htmloutput->resultsFooter();
 	if ($failed)
-		exitOnError(ERROR_LDAP_OP_FAILED, ldap_error($ldap_func->ldap_conn));
+		throw new Exception(ldap_error($ldap_func->getConn()), ERROR_LDAP_OP_FAILED);
 } # }}}
 
 # {{{ main()
@@ -477,50 +488,55 @@ function main() {
 	sanity();
 
 	if (isset($_REQUEST["do"])) {
-		switch ($_REQUEST["do"]) {
-			case "search_form":
-				search_form($_SESSION["ldap_basedn"]);
-			break;
-			case "logout":
-				logout();
-			break;
-			case "create_step1":
-				if (isset($_REQUEST["parent"]))
-					$parent = $_REQUEST["parent"];
-				else
-					$parent = "";
+		try {
+			switch ($_REQUEST["do"]) {
+				case "search_form":
+					search_form($_SESSION["ldap_basedn"]);
+				break;
+				case "logout":
+					logout();
+				break;
+				case "create_step1":
+					if (isset($_REQUEST["parent"]))
+						$parent = $_REQUEST["parent"];
+					else
+						$parent = "";
 				create_step1($entry_types, $ldap_func, $parent);
-			break;
-			case "create_step2":
-				create_step2($_REQUEST["entry_type"], $_REQUEST["parent"], split(",", $_REQUEST["objectclasses"]));
-			break;
-			case "create_step3":
-				create_step3($_REQUEST["data"]);
-			break;
-			case "search":
-				search();
-			break;
-			case "view_entry": 
-				viewEntry($_REQUEST["dn"]);
-			break;
-			case "delete_entry":
-				deleteEntry($_REQUEST["dn"]);
-			break;
-			case "modify_entry":
-				modifyEntry($_REQUEST["data"]);
-			break;
+				break;
+				case "create_step2":
+					create_step2($_REQUEST["entry_type"], $_REQUEST["parent"], split(",", $_REQUEST["objectclasses"]));
+				break;
+				case "create_step3":
+					create_step3($_REQUEST["data"]);
+				break;
+				case "search":
+					search();
+				break;
+				case "view_entry": 
+					viewEntry($_REQUEST["dn"]);
+				break;
+				case "delete_entry":
+					deleteEntry($_REQUEST["dn"]);
+				break;
+				case "modify_entry":
+					modifyEntry($_REQUEST["data"]);
+				break;
 
-			case "modrdn_form":
-				modrdn_form($_REQUEST["dn"]);
-			break;
+				case "modrdn_form":
+					modrdn_form($_REQUEST["dn"]);
+				break;
 
-			case "modrdn":
-				modrdn($_REQUEST["data"]);
-			break;
+				case "modrdn":
+					modrdn($_REQUEST["data"]);
+				break;
 
+			}
+		}
+		catch (Exception $ex) {
+			$htmloutput = new HTMLOutput();
+			$htmloutput->errorDialog($ex);
 		}
 	}
-
 }
 # }}}
 

@@ -6,61 +6,94 @@ define("DEFAULT_LDAP_VERSION", 3);
 # This is an ldap functions wrapper that adds some more functions
 #
 class LDAPFunc {
-	var $ldap_conn;
-	var $bound = 0; # When zero means that we're not bound yet
-	var $server = ""; # Will contain the server's address
-	var $ldap_version; # Chosen ldap version
+	private $ldap_conn;
+	private $bound = 0; # When zero means that we're not bound yet
+	private $server = ""; # Will contain the server's address
+	private $ldap_version; # Chosen ldap version
 
-	function get_ldap_version() { return $this->ldap_version; }
-	function set_ldap_version($str) { $this->ldap_version = $str; }
+	# =====================================
 
-	function get_server() { return $this->server; }
-	function set_server($str) { $this->server = $str; }
+	public function getLdapVersion() { return $this->ldap_version; }
+	public function setLdapVersion($str) { $this->ldap_version = $str; }
 
+	public function getServer() { return $this->server; }
+	public function setServer($str) { $this->server = $str; }
+
+	public function getBound() { return $this->bound; }
+
+	public function getConn() { return $this->ldap_conn; }
+
+	# =====================================
 
 	#
 	# Simple LDAP functions (we just wrap them)
 	#
 
 	# {{{ Constructor - connects to the ldap server
-	function LDAPFunc($server, $port, $tls) {
-		$this->ldap_conn = @ldap_connect($server, $port) or exitOnError(ERROR_LDAP_CANT_CONNECT);
-		if (defined("LDAP_VERSION"))
-			$this->set_ldap_version(LDAP_VERSION);
-		else
-			$this->set_ldap_version(DEFAULT_LDAP_VERSION);
+	function __construct($server, $port, $tls) {
+		$result = $this->ldap_conn = @ldap_connect($server, $port);
+		if (!$result)
+			throw new Exception("", ERROR_LDAP_CANT_CONNECT);
 
-		@ldap_set_option($this->ldap_conn, LDAP_OPT_PROTOCOL_VERSION, $this->get_ldap_version()) or exitOnError(0, "Cannot set ldap version ".$this->get_ldap_version());
+		if (defined("LDAP_VERSION"))
+			$this->ldap_version = LDAP_VERSION;
+		else
+			$this->ldap_version = DEFAULT_LDAP_VERSION;
+
+	
+		$result = @ldap_set_option($this->ldap_conn, LDAP_OPT_PROTOCOL_VERSION,
+			$this->ldap_version);
+		if (!$result)
+			throw new Exception("Cannot set ldap version ".$this->ldap_version(), 0);
 
 		# Adding start_tls, which requires ldap protocol version 3
 		if ($tls) {
 			if (DEBUG) echo "Starting TLS...<BR>\n";
-			if ($this->get_ldap_version() == 3){
+			if ($this->ldap_version() == 3){
 				if (!function_exists("ldap_start_tls"))
-					exitOnError(ERROR_TLS_NOT_SUPPORTED);
-				@ldap_start_tls($this->ldap_conn) or exitOnError(ERROR_TLS_CANT_CONNECT, ldap_error($this->ldap_conn));
+					throw new Exception("", ERROR_TLS_NOT_SUPPORTED);
+				$result = @ldap_start_tls($this->ldap_conn);
+
+				if (!$result)
+					throw new Exception(ldap_error($this->ldap_conn), ERROR_TLS_CANT_CONNECT);
 			} else {
-				exitOnError(ERROR_TLS_BUT_V3);
+				throw new Exception("", ERROR_TLS_BUT_V3);
 			}
 		}
 
-
 		# We might want to know which server it is later.
-		$this->set_server($server);
+		$this->server = $server;
 		
 	} # }}}
 
 	# {{{ search()
-	function search($basedn, $filter, $scope) {
+	public function search($basedn, $filter, $scope) {
 
 		switch ($scope) {
-			case "sub": $sr = @ldap_search($this->ldap_conn, $basedn, $filter) or exitOnError(ERROR_LDAP_CANT_SEARCH); break;
-			case "one": $sr = @ldap_list($this->ldap_conn, $basedn, $filter) or exitOnError(ERROR_LDAP_CANT_SEARCH); break;
-			case "base": $sr = @ldap_read($this->ldap_conn, $basedn, $filter) or exitOnError(ERROR_LDAP_CANT_SEARCH); break;
-			default: exitOnError(ERROR_BAD_OP);
+			case "sub":
+				$sr = @ldap_search($this->ldap_conn, $basedn, $filter);
+				if (!$sr)
+					throw new Exception("", ERROR_LDAP_CANT_SEARCH);
+				break;
+
+			case "one":
+				$sr = @ldap_list($this->ldap_conn, $basedn, $filter);
+				if (!$sr)
+					throw new Exception("", ERROR_LDAP_CANT_SEARCH);
+				break;
+
+			case "base":
+				$sr = @ldap_read($this->ldap_conn, $basedn, $filter);
+				if (!$sr)
+					throw new Exception("", ERROR_LDAP_CANT_SEARCH);
+				break;
+
+			default:
+				throw new Exception("", ERROR_BAD_OP);
 		}
 
-		if (!$sr) exitOnError(ERROR_LDAP_CANT_SEARCH);
+		if (!$sr)
+			throw new Exception("", ERROR_LDAP_CANT_SEARCH);
 
 		$info = ldap_get_entries($this->ldap_conn, $sr);
 
@@ -68,8 +101,7 @@ class LDAPFunc {
 	} # }}}
 
 	# {{{ bind() - Binds either anonymously or as a user
-	function bind($binddn, $bindpw) {
-#		ldap_start_tls($this->ldap_conn) or die("CANT".ldap_error($this->ldap_conn));
+	public function bind($binddn, $bindpw) {
 		if ($binddn && $bindpw) {
 			# Not anonymously
 			# echo "Binding as $binddn/$bindpw<BR>";
@@ -81,23 +113,27 @@ class LDAPFunc {
 			$retval = @ldap_bind($this->ldap_conn);
 		}
 
-		if ($retval) $bound = 1;
+		if ($retval)
+			$this->bound = 1;
+		else
+			throw new Exception("", ERROR_LDAP_BIND_ERROR);
+
 		return $retval;
 	} # }}}
 
 	# Advanced LDAP functions
 
 
-	/* {{{ getMayMust() is a recursive function which returns all an
+	/* {{{ getMayMust() is a recursive function which returns an
 	array of all the May & Must attributes of an object and it's parent
 	objects */
-	function getMayMust($objectclass, $objectclasses_array, $name2oid_array) {
+	public function getMayMust($objectclass, $objectclasses_array, $name2oid_array) {
 
 		$objectclass = strtolower($objectclass);
 		if (array_key_exists($objectclass, $name2oid_array))
 			$oid = $name2oid_array[$objectclass];
 		else
-			exitOnError(ERROR_SCHEMA_PROBLEM, "unknown objectclass ".$objectclass);
+			throw new Exception("unknown objectclass ".$objectclass, ERROR_SCHEMA_PROBLEM);
 		
 		$current_maymust = array();
 		if (array_key_exists("may", $objectclasses_array[$oid]))
@@ -127,7 +163,7 @@ class LDAPFunc {
 	} /* }}} */
 
 	/* {{{ getSubSchemaDN() function returns the dn of the subschema */
-	function getSubSchemaDN() {
+	public function getSubSchemaDN() {
 		if (DEBUG) echo "Reading schema from LDAP<BR>";
 		$sr = ldap_read($this->ldap_conn, "", "(objectClass=*)", array("subschemaSubentry"));
 		if (!$sr) die("Search error! ".ldap_error($this->ldap_conn));
@@ -142,7 +178,7 @@ class LDAPFunc {
 		objectclasses and their may and must attributes,
 		and maybe more stuff later
 	*/
-	function getSchemaHash(&$name2oid, &$objectclasses) {
+	public function getSchemaHash(&$name2oid, &$objectclasses) {
 	
 	/* objectclasses is an associative array, for every object. The key is the OID. examples:
 	objectclasses["1.2.3.4"]
@@ -248,7 +284,7 @@ class LDAPFunc {
 	/* {{{	getSchemaHash_attributeTypes() returns a hash of the 
 		attributetypes part of the schema
 	*/
-	function GetSchemaHash_attributeTypes(&$name2oid, &$attributetypes) {
+	public function GetSchemaHash_attributeTypes(&$name2oid, &$attributetypes) {
 		$subschema_dn = $this->getSubSchemaDN();
 		if (!$subschema_dn) die("Cannot get the subschema DN!");
 		$sr = ldap_read($this->ldap_conn, $subschema_dn, "(objectClass=*)", array("attributeTypes"));
@@ -299,7 +335,7 @@ class LDAPFunc {
 	/* {{{ getSynonymAttrs(name2oid, origAttr) returns an array of attributes
 		same as $origAttr
 	*/
-	function getSynonymAttrs($name2oid, $origAttr) {
+	public function getSynonymAttrs($name2oid, $origAttr) {
 		$retArray = array();
 
 		$origOid = $name2oid[$origAttr];

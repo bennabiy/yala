@@ -11,8 +11,8 @@ require	"htmloutput.inc.php";
 function flushCache($ldap_func) {
 
 	# Set the filenames of cache files
-	$name2oidCacheFile = NAME2OID_CACHEFILE.".".str_replace("/", "", $ldap_func->get_server());
-	$objectclassesCacheFile = OBJECTCLASSES_CACHEFILE.".".str_replace("/", "", $ldap_func->get_server());
+	$name2oidCacheFile = NAME2OID_CACHEFILE.".".str_replace("/", "", $ldap_func->getServer());
+	$objectclassesCacheFile = OBJECTCLASSES_CACHEFILE.".".str_replace("/", "", $ldap_func->getServer());
 
 	if (DEBUG) print ("UNLINKING!\n");
 	if (file_exists($name2oidCacheFile)) unlink($name2oidCacheFile);
@@ -35,7 +35,8 @@ function main() {
 
 	if (isset($_POST["ldap_server"])) {
 		# Before we use the php session feature, make sure it works :)
-		if ($_SESSION["yala"] != TRUE) exitOnError(ERROR_SESSION_SUPPORT_PROBLEM);
+		if ($_SESSION["yala"] != TRUE)
+			throw new Exception("", ERROR_SESSION_SUPPORT_PROBLEM);
 
 		# If we're just after the login form:
 		$_SESSION["ldap_server"] = $_POST["ldap_server"];
@@ -55,13 +56,28 @@ function main() {
 	if ($submit == "Anonymous Login") {
 		$_SESSION["ldap_binddn"] = ""; $_SESSION["ldap_bindpw"] = "";
 	}
-	$ldap_func = login();
+
+	try {
+		$ldap_func = login();
+	}
+	catch (Exception $ex) {
+		$_SESSION["login_error"] = "Login error: ".getErrString($ex->getCode(), $ex->getMessage());
+		unset($_SESSION["ldap_server"]); // BAD! should be some other way!
+?>
+<script type="text/javascript">
+window.location = "<?=$_SERVER["REQUEST_URI"]?>";
+</script>
+<?
+	}
 
 	if ($do) {
 		switch ($do) {
-			case "reloadschema": flushCache($ldap_func); break;
+			case "reloadschema":
+				flushCache($ldap_func);
+				break;
 
-			default: exitOnError(ERROR_BAD_OP, $do);
+			default:
+				throw new Exception($do, ERROR_BAD_OP);
 		}
 	}
 
@@ -74,7 +90,7 @@ function main() {
 		switch ($submit) {
 			case "Anonymous Login":
 			case "Login":  break;
-			default: exitOnError(ERROR_BAD_OP, $submit);
+			default: throw new Exception($submit, ERROR_BAD_OP);
 		}
 	}
 

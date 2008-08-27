@@ -2,31 +2,35 @@
 # vim:foldmethod=marker
 
 class LdapTree {
-	var $treeArray = array();
-	var $iconsHash = array();
-	var $ldap_conn;
+	private $treeArray = array();
+	private $iconsHash = array();
+	private $ldap_conn;
 
-	function __construct($ldap_func, $basedn) {
+	# ====================================================
+	public function getIconsHash() { return $this->iconsHash; }
+	public function getTreeArray() { return $this->treeArray; }
+	# ====================================================
+
+	public function __construct($ldap_func, $basedn) {
 		global $entry_types;
-		$this->ldap_conn = $ldap_func->ldap_conn;
+		$this->ldap_conn = $ldap_func->getConn();
 
 		$this->treeArray = $this->mkArray($basedn);
 
 		/* Make the icons hash */
 		if (isset($entry_types) && is_array($entry_types))
-			$this->iconsHash = $this->createIconsHash($entry_types);
+			$this->createIconsHash($entry_types);
 	}
 
 	/** {{{ getList
 	 * @param basedn basedn
 	 * @return an ldap-array with list of entries directly under $basedn
 	*/
-	function getList($basedn) {
-		$ldapResults = ldap_list($this->ldap_conn, $basedn, "(objectClass=*)", array("dn", "objectclass"));
+	public function getList($basedn) {
+		$ldapResults = @ldap_list($this->ldap_conn, $basedn, "(objectClass=*)", array("dn", "objectclass"));
 
-		if (!$ldapResults) {
-			exitOnError(ERROR_CANT_READ_TREE, $base_dn);
-		}
+		if (!$ldapResults)
+			throw new Exception($basedn, ERROR_CANT_READ_TREE);
 
 		$info = ldap_get_entries($this->ldap_conn, $ldapResults);
 		if (!$info["count"])
@@ -38,7 +42,7 @@ class LdapTree {
 	/** {{{ mkArray
 	 *
 	*/
-	function mkArray($basedn, $ancestor = true) {
+	public function mkArray($basedn, $ancestor = true) {
 		$ar = array();
 
 		$info = $this->getList($basedn);
@@ -80,9 +84,10 @@ class LdapTree {
 	  * $icons["open_user"]["filename"] = "open_user.png";
 	  * $icons["open_user"]["size"] = "width=22 height=20"
 	  * @param entry_types The hash from the configuration..
-	  * @return the hash..
+	  *
+	  * Updates $this->iconsHash
 	 */
-	function createIconsHash($entry_types) {
+	public function createIconsHash($entry_types) {
 		$icons = array();
 
 		foreach (array_keys($entry_types) as $key) {
@@ -99,10 +104,10 @@ class LdapTree {
 			}
 		}
 
-		return $icons;
-	} /* }}} */
+		$this->iconsHash = $icons;
 
-	function getTreeArray() { return $this->treeArray; }
+		return;
+	} /* }}} */
 }
 
 

@@ -27,68 +27,88 @@ define("ERROR_SCHEMA_PROBLEM"		,11);
 define("ERROR_LDAP_NOT_SUPPORTED"	,12);
 define("ERROR_TLS_NOT_SUPPORTED"	,13);
 define("ERROR_SESSION_SUPPORT_PROBLEM"	,14);
+define("ERROR_LDAP_BIND_ERROR"		,15);
 
 
 #
 # FUNCTIONS
 #
 
-function exitOnError($error_num, $additional_str = "") {
+# Returns a matching error string
+function getErrString($error_num, $additional_str = "") {
 
 	$str = "";
 
 	switch ($error_num) {
-		case ERROR_BAD_OP: $str = "Unknown operation was chosen"; 
+		case ERROR_BAD_OP:
+			$str = "Unknown operation was chosen"; 
 			if ($additional_str) $str .= " - ".$additional_str;
 			break;
-		case ERROR_FEW_ARGUMENTS: $str = "Weird, function didn't get enough arguments!"; 
+
+		case ERROR_FEW_ARGUMENTS:
+			$str = "Weird, function didn't get enough arguments!"; 
 			break;
-		case ERROR_LDAP_CANT_CONNECT: $str = "Cannot connect to ldap server (".$additional_str.")";
+
+		case ERROR_LDAP_CANT_CONNECT:
+			$str = "Cannot connect to ldap server (".$additional_str.")";
 			break;
-		case ERROR_LDAP_CANT_SEARCH: $str = "Search problem..";
+
+		case ERROR_LDAP_CANT_SEARCH:
+			$str = "Search error. Did you supply valid data?";
 			break;
-		case ERROR_CACHE_CANT_READ: $str = "Can't open cache file (".$additional_str.") for reading!";
+
+		case ERROR_CACHE_CANT_READ:
+			$str = "Can't open cache file (".$additional_str.") for reading!";
 			break;
-		case ERROR_CACHE_CANT_WRITE: $str = "Can't open cache file (".$additional_str.") for writing!";
+
+		case ERROR_CACHE_CANT_WRITE:
+			$str = "Can't open cache file (".$additional_str.") for writing!";
 			break;
+
 		case ERROR_TLS_BUT_V3: $str = "TLS Connects require LDAP v3. Fix the 'LDAP_VERSION' setting in conf.inc.php";
 			break;
-		case ERROR_TLS_CANT_CONNECT: $str = "Couldn't establish TLS connection: ".$additional_str."<BR>Hint 1: Is the certificate made for <I>".$_SESSION["ldap_server"]."</I> (Common-Name field)?<BR>Hint 2: If you don't want TLS support, comment out LDAP_TLS in config.inc.php";
-			if (function_exists("logout")) logout();
+		case ERROR_TLS_CANT_CONNECT:
+			$str = "Couldn't establish TLS connection: ".$additional_str."<BR>Hint 1: Is the certificate made for <I>".$_SESSION["ldap_server"]."</I> (Common-Name field)?<BR>Hint 2: If you don't want TLS support, comment out LDAP_TLS in config.inc.php";
+			if (function_exists("logout"))
+				logout();
 			break;
-		case ERROR_CANT_READ_TREE: $str = "Cannot read the tree. Maybe the Base DN (".$additional_str.") is wrong?";
+
+		case ERROR_CANT_READ_TREE:
+			$str = "Cannot read the tree. Maybe the Base DN (".$additional_str.") is wrong?";
 			break;
-		case ERROR_LDAP_OP_FAILED: $str = "The LDAP operation failed: ".$additional_str;
+
+		case ERROR_LDAP_OP_FAILED:
+			$str = "The LDAP operation has failed: ".$additional_str;
 			break;
+
 		case ERROR_SCHEMA_PROBLEM: $str = "Something is weird about the current schema: ".$additional_str;
 			break;
-		case ERROR_LDAP_NOT_SUPPORTED: $str = "LDAP is not supported by
+
+		case ERROR_LDAP_NOT_SUPPORTED:
+			$str = "LDAP is not supported by
 this PHP installation:<BR><OL><LI>make sure you have php-ldap package
 installed</LI><LI>check out your php.ini configuration</LI></OL>";
 			break;
-		case ERROR_TLS_NOT_SUPPORTED: $str = "LDAP over TLS is not
-supported by this php installation";
+
+		case ERROR_TLS_NOT_SUPPORTED:
+			$str = "LDAP over TLS is not supported by this php installation";
 			break;
-		case ERROR_SESSION_SUPPORT_PROBLEM: $str = "Error using PHP sessions.
+
+		case ERROR_SESSION_SUPPORT_PROBLEM:
+			$str = "Error using PHP sessions.
 check your PHP session configuration (i.e. /etc/php),
 and make sure there's enough free space on the disk";
 			break;
-		default: $str = "Unknown Error!";
+
+		case ERROR_LDAP_BIND_ERROR:
+			$str = "Login failed. Bad bind DN / password?";
+			break;
+
+		default:
+			$str = "Unknown Error!";
 	}
 
-?>
-<CENTER>
-<TABLE CLASS="error">
-<TR><TD><IMG SRC="images/error.png"></TD><TD>
-<?
-	echo "ERROR #".$error_num.": ".$str;
-?>
-</TD></TR>
-</TABLE>
-</CENTER>
-<?
-	include INCLUDE_PATH."/footer.inc";
-	exit;
+	return $str;
 }
 
 /* {{{ sanity_checks()
@@ -96,7 +116,7 @@ and make sure there's enough free space on the disk";
 */
 function sanity_checks() {
 	if (!function_exists("ldap_connect")) {
-		exitOnError(ERROR_LDAP_NOT_SUPPORTED);
+		throw new Exception("", ERROR_LDAP_NOT_SUPPORTED);
 	}
 } /* }}} */
 

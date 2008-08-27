@@ -6,8 +6,8 @@
 function getCachedSchema($ldap_func, &$name2oid, &$objectclasses) {
 
 	# Set the filenames of cache files
-	$name2oidCacheFile = NAME2OID_CACHEFILE.".".str_replace("/", "", $ldap_func->get_server());
-	$objectclassesCacheFile = OBJECTCLASSES_CACHEFILE.".".str_replace("/", "", $ldap_func->get_server());
+	$name2oidCacheFile = NAME2OID_CACHEFILE.".".str_replace("/", "", $ldap_func->getServer());
+	$objectclassesCacheFile = OBJECTCLASSES_CACHEFILE.".".str_replace("/", "", $ldap_func->getServer());
 	$cacheIsFine = TRUE;
 
 	/* Can we get it from cache?
@@ -29,20 +29,25 @@ function getCachedSchema($ldap_func, &$name2oid, &$objectclasses) {
 	
 	if ($cacheIsFine) {
 		if ($f = @fopen($name2oidCacheFile, "r")) {
-			$str = fread($f, filesize($name2oidCacheFile)) or exitOnError(ERROR_CACHE_CANT_READ, $name2oidCacheFile);
+			$str = fread($f, filesize($name2oidCacheFile));
+			if (!$str)
+				throw new Exception($name2oidCacheFile, ERROR_CACHE_CANT_READ);
+
 			$name2oid = unserialize($str);
 			fclose($f);
 		}
 		else
-			exitOnError(ERROR_CACHE_CANT_READ, $name2oidCacheFile);
+			throw new Exception($name2oidCacheFile, ERROR_CACHE_CANT_READ);
 
 		if ($f = @fopen($objectclassesCacheFile, "r")) {
-			$str = fread($f, filesize($objectclassesCacheFile)) or exitOnError(ERROR_CACHE_CANT_READ, $objectclassesCacheFile);
+			$str = fread($f, filesize($objectclassesCacheFile));
+			if (!$str)
+				throw new Exception($objectclassesCacheFile, ERROR_CACHE_CANT_READ);
 			$objectclasses = unserialize($str);
 			fclose($f);
 		}
 		else
-			exitOnError(ERROR_CACHE_CANT_READ, $objectclassesCacheFile);
+			throw new Exception($objectclassesCacheFile, ERROR_CACHE_CANT_READ);
 	}
 	else { # Cache is no good
 		/* Read the schema from LDAP */
@@ -51,18 +56,23 @@ function getCachedSchema($ldap_func, &$name2oid, &$objectclasses) {
 		/* Save it in cache */
 		umask(077); # We don't want the schema world readable..
 		if ($f = @fopen($name2oidCacheFile, "w")) {
-			fwrite($f, serialize($name2oid)) or exitOnError(ERROR_CACHE_CANT_WRITE, $name2oidCacheFile);
+			$result = fwrite($f, serialize($name2oid));
+			if (!$result)
+				throw new Exception($name2oidCacheFile, ERROR_CACHE_CANT_WRITE);
+
 			fclose($f);
 		}
 		else
-			exitOnError(ERROR_CACHE_CANT_WRITE, $name2oidCacheFile);
+			throw new Exception($name2oidCacheFile, ERROR_CACHE_CANT_WRITE);
 
 		if ($f = @fopen($objectclassesCacheFile, "w")) {
-			fwrite($f, serialize($objectclasses)) or exitOnError(ERROR_CACHE_CANT_WRITE, $objectclassesCacheFile);
+			$result = fwrite($f, serialize($objectclasses));
+			if (!$result)
+				throw new Exception($objectclassesCacheFile, ERROR_CACHE_CANT_WRITE);
 			fclose($f);
 		}
 		else
-			exitOnError(ERROR_CACHE_CANT_WRITE, $objectclassesCacheFile);
+			throw new Exception($objectclassesCacheFile, ERROR_CACHE_CANT_WRITE);
 	}
 }
 # }}}
@@ -74,17 +84,29 @@ function login() {
 	$_SESSION["yala"] = TRUE;
 	sanity_checks();
 
-	# If $ldap_server && $ldap_port are set
-	if (array_key_exists("ldap_server", $_SESSION) && array_key_exists("ldap_port", $_SESSION) && $_SESSION["ldap_server"] && $_SESSION["ldap_port"]) {
+	# Should we simply try to connect? (or display the form first..)
+	if (
+		!isset($_SESSION["login_error"]) &&
+		isset($_SESSION["ldap_server"]) &&
+		isset($_SESSION["ldap_port"]))
+	{
 		# First connect..
-		$ldap_func = new LDAPFunc($_SESSION["ldap_server"], $_SESSION["ldap_port"], $_SESSION["ldap_tls"]) or exitOnError(ERROR_LDAP_CANT_CONNECT, $_SESSION["ldap_server"].":".$_SESSION["ldap_port"]);
+		$ldap_func = new LDAPFunc($_SESSION["ldap_server"], $_SESSION["ldap_port"], $_SESSION["ldap_tls"]);
 
 		# Let's try to login, if successful skip the next stuff
 		$bind = $ldap_func->bind($_SESSION["ldap_binddn"], $_SESSION["ldap_bindpw"]);
-		if ($bind) {
+		if ($bind)
 			return $ldap_func;
-		}
-			echo "Bind problem: ".ldap_error($ldap_func->ldap_conn)."<BR>";
+		else
+			throw new Exception(ldap_error($ldap_func->getConn()), ERROR_LDAP_BIND_ERROR);
+
+		# TODO Make more sanity: try to read the BASEDN
+	}
+
+	// ERROR?
+	if ($_SESSION["login_error"]) { 
+		print $_SESSION["login_error"];
+		unset($_SESSION["login_error"]); // cleanup
 	}
 
 	# Get settings either from session or from defaults
