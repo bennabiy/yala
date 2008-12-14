@@ -30,7 +30,7 @@ function main() {
 
 		require INCLUDE_PATH."/toolbar.inc";
 
-?><ul class="mktree"><?
+?><ul class="mktree" id="TreeRoot"><?
 	$htmloutput->viewTree($tree->getTreeArray());
 ?></ul><?
 	}

@@ -18,6 +18,10 @@ This code is inspired by and extended from Stuart Langridge's aqlist code:
 		Inspired by Aaron's labels.js (http://youngpup.net/demos/labels/) 
 		and Dave Lindquist's menuDropDown.js (http://www.gazingus.org/dhtml/?id=109)
 */
+/*
+		This is not the original version,
+		but a slightly modified one, by Oren Held
+*/
 
 // Automatically attach a listener to the window onload, to convert the trees
 //addEvent(window,"load",convertTrees);
@@ -118,6 +122,16 @@ function convertTrees() {
 
 function treeNodeOnclick() {
 	this.parentNode.className = (this.parentNode.className==nodeOpenClass) ? nodeClosedClass : nodeOpenClass;
+
+	var name = this.parentNode.getAttribute("id").substring(1);
+
+	if (this.parentNode.className == nodeClosedClass)
+		// remove
+		delete g_treeExpandedItems[name];
+	else
+		// add
+		g_treeExpandedItems[name] = 1;
+
 	return false;
 }
 function retFalse() {

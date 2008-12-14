@@ -2,7 +2,8 @@
 
 /* Globals */
 var jsutils = new jsutils();
-
+var g_treeExpandedItems = {};
+var g_iterate = 0;
 
 /* {{{ jsutils class */
 function jsutils() {
@@ -132,7 +133,7 @@ function getSelectedOptions(id) {
 	return output;
 }
 
-function callBackEnd(str, params) {
+function callBackEnd(str, params, refresh) {
 	var url = "back.php?do="+str;
 	if (params != undefined)
 		url += "&"+params;
@@ -141,13 +142,26 @@ function callBackEnd(str, params) {
 	function (html) {
 		var mainDiv = jsutils.el("mainDiv");
 		mainDiv.innerHTML = html;
-		refreshTree();
+		if (refresh)
+			refreshTree();
 	});
 }
 
-/* Refresh the tree by modifying only the deltas, don't re-generate */
+function expandBranches() {
+	var dn;
+	var el;
+
+	for (var dn in g_treeExpandedItems) {
+		el = document.getElementById(g_iterate+dn);
+		if (el != undefined) {
+			el.className = nodeOpenClass;
+		}
+	}
+}
+
 function refreshTree() {
-	// Temporarily does nothing, refreshing the dynamic tree is no easy :(
+	g_iterate++;
+	populateTree(g_iterate);
 
 	return;
 }
@@ -176,13 +190,15 @@ function dupObj(obj, cleanupInput) {
 	par.insertBefore(newObj, nextObj);
 }
 
-function populateTree() {
+function populateTree(iterate) {
 	jsutils.el("treeDiv").style.visibility = 'hidden';
-	jsutils.ajax("tree.php",
+
+	jsutils.ajax("tree.php?iterate="+iterate,
 	function (html) {
 		var treeDiv = jsutils.el("treeDiv");
 		treeDiv.innerHTML = html;
 		convertTrees();
+		expandBranches();
 		treeDiv.style.visibility = '';
 	});
 
@@ -190,12 +206,12 @@ function populateTree() {
 }
 
 function afterLoad() {
-	populateTree();
+	populateTree(0);
 }
 
 function viewEntry(dn) {
 	currentEntry = dn;
-	callBackEnd("view_entry", "dn="+dn);
+	callBackEnd("view_entry", "dn="+dn, false);
 }
 
 function main() {
