@@ -1,9 +1,12 @@
 // vim:ft=javascript:foldmethod=marker:
 
 /* Globals */
-var jsutils = new jsutils();
+var g_jsutils = new jsutils();
 var g_treeExpandedItems = {};
 var g_iterate = 0;
+
+/* Constants */
+var MIN_WIN_HEIGHT = 300;
 
 /* {{{ jsutils class */
 function jsutils() {
@@ -91,9 +94,9 @@ function processEntryForm(action) {
 	}
 	
 	var url = "back.php";
-	jsutils.ajaxPost(url, "do="+action+"&data="+JSON.stringify(data),
+	g_jsutils.ajaxPost(url, "do="+action+"&data="+JSON.stringify(data),
 		function (html) {
-			jsutils.el("mainDiv").innerHTML = html;
+			g_jsutils.el("entryDiv").innerHTML = html;
 			refreshTree();
 		});
 }
@@ -107,16 +110,16 @@ function deleteEntry() {
 function doSearch() {
 	var url = "back.php?do=search";
 
-	var basedn = jsutils.urlencode(jsutils.el("search_basedn").value);
-	var filter = jsutils.urlencode(jsutils.el("search_filter").value);
-	var scope = jsutils.urlencode(jsutils.el("search_scope").value);
+	var basedn = g_jsutils.urlencode(g_jsutils.el("search_basedn").value);
+	var filter = g_jsutils.urlencode(g_jsutils.el("search_filter").value);
+	var scope = g_jsutils.urlencode(g_jsutils.el("search_scope").value);
 
 	url += "&basedn="+basedn+"&filter="+filter+"&scope="+scope;
 
-	jsutils.ajax(url, 
+	g_jsutils.ajax(url, 
 	function (html) {
-		var mainDiv = jsutils.el("mainDiv");
-		mainDiv.innerHTML = html;
+		var div = g_jsutils.el("entryDiv");
+		div.innerHTML = html;
 	});
 }
 
@@ -138,10 +141,10 @@ function callBackEnd(str, params, refresh) {
 	if (params != undefined)
 		url += "&"+params;
 
-	jsutils.ajax(url,
+	g_jsutils.ajax(url,
 	function (html) {
-		var mainDiv = jsutils.el("mainDiv");
-		mainDiv.innerHTML = html;
+		var div = g_jsutils.el("entryDiv");
+		div.innerHTML = html;
 		if (refresh)
 			refreshTree();
 	});
@@ -191,11 +194,11 @@ function dupObj(obj, cleanupInput) {
 }
 
 function populateTree(iterate) {
-	jsutils.el("treeDiv").style.visibility = 'hidden';
+	g_jsutils.el("treeDiv").style.visibility = 'hidden';
 
-	jsutils.ajax("tree.php?iterate="+iterate,
+	g_jsutils.ajax("tree.php?iterate="+iterate,
 	function (html) {
-		var treeDiv = jsutils.el("treeDiv");
+		var treeDiv = g_jsutils.el("treeDiv");
 		treeDiv.innerHTML = html;
 		convertTrees();
 		expandBranches();
@@ -205,19 +208,55 @@ function populateTree(iterate) {
 	return;
 }
 
-function afterLoad() {
+function onResize() {
+	var windowHeight;
+
+	if (document.documentElement != undefined)
+		windowHeight = document.documentElement.clientHeight;
+
+	if (windowHeight == undefined || windowHeight < MIN_WIN_HEIGHT)
+		windowHeight = MIN_WIN_HEIGHT;
+
+	var divsHeight = windowHeight - 65;
+	divsHeight += "px";
+
+	g_jsutils.el("entryDiv").style.height = divsHeight;
+	g_jsutils.el("treeDiv").style.height = divsHeight;
+}
+
+function onLoad() {
+	onResize()
 	populateTree(0);
+}
+
+/* Set them on or off... */
+function actionButtons(on, exists) {
+	btn_mod = document.getElementById("button_modify");
+	btn_del = document.getElementById("button_delete");
+	btn_new = document.getElementById("button_new");
+	if (on) {
+		btn_mod.disabled = btn_del.disabled = false;
+		if (exists) 
+			btn_new.disabled = false;
+		else
+			btn_new.disabled = true;
+	}
+	else {
+		btn_mod.disabled = btn_del.disabled = btn_new.disabled = true;
+	}
 }
 
 function viewEntry(dn) {
 	currentEntry = dn;
+	actionButtons(true, true)
 	callBackEnd("view_entry", "dn="+dn, false);
 }
 
 function main() {
 	var currentEntry;
 
-	window.onload = function() { afterLoad(); }
+	window.onload = function() { onLoad(); }
+	window.onresize = function() { onResize(); }
 }
 
 /* ====== MAIN ====== */

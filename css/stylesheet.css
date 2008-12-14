@@ -1,9 +1,9 @@
-TABLE { border-style: none; margin: 3pt; }
+TABLE { border-style: none; }
 TABLE.dense { border-style: none; border-spacing: 0; margin: 0; padding: 0; }
 TABLE.results-inner { border-spacing: 0; margin: 0; padding: 0; }
 TABLE.view-inner { border-spacing: 0; margin: 0; padding: 0; }
-TABLE.results-outer	{ border: thin dotted black; background-color: #E5EFFF; }
-TABLE.view-outer	{ border: thin dotted black; background-color: #E5EFFF; }
+TABLE.results-outer	{ background-color: #E5EFFF; }
+TABLE.view-outer	{ background-color: #E5EFFF; }
 TABLE.error { border: thin dotted black; margin-top: 8%; }
 A:link,A:visited { color: #3333CC; text-decoration: none; }
 A:hover { background-color: #D5DFFF; text-decoration: underline; }
@@ -12,7 +12,6 @@ TR.view-inner { border: thin dotted black; }
 TR.dnbgcolor { background-color: #B5BFEF; }
 TR.bgcolor1  { background-color: #C5CFEF; }
 TR.bgcolor2  { background-color: #E5EFFF; }
-TR.actionbar { text-align: center; }
 TD.view-dnattr { color: #000066; font-weight: bold; font-size: 110% }
 SPAN.smaller { font-weight: normal; font-size: 75% }
 TD.attr	  { color: #222266; width: 35%; border: thin solid white; }
@@ -27,9 +26,11 @@ ACRONYM { border-bottom: 1px dotted #333; cursor: help; }
 H2 { font-size: 10px; color: #AAAAAA; font-weight: normal; }
 INPUT.submit { background: #E5EFFF; color: #3333CC; }
 .TreeItemIcon { padding-right: 5px; }
-div.treeDiv { float: left; width: 250px; background-color: #f3f3f3; border: 1px solid #d0d0d0; }
-div.mainDiv { margin-left: 265px; }
+div.sideBarDiv { float: left; width: 250px; background-color: #f3f3f3; border: 1px solid #d0d0d0; }
+div.mainDiv { margin-left: 265px; border: 1px solid #d0d0d0; }
+div.entryDiv { height: 400px; overflow: auto; }
+div.treeDiv { height: 400px; overflow: auto; }
 div.center { text-align: center; }
-div.actionBar { text-align: center; background-color: #f3f3f3; }
-div.actionBar button { margin: 0 4em; }
-div.toolBar { text-align: center; font-size: 70%; padding: 5px; background-color: #e3e3e3; border-bottom: 1px solid #d0d0d0; }
+div.actionBar { height: 30px; text-align: center; background-color: #e3e3e3; border-bottom: 1px solid #d0d0d0; }
+div.actionBar button { margin: 5px 3em; }
+div.toolBar { height: 20px; text-align: center; font-size: 75%; padding: 5px; background-color: #e3e3e3; border-bottom: 1px solid #d0d0d0; }

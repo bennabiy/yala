@@ -17,45 +17,45 @@ class HTMLOutput {
 
 	public function resultsHeader($dn) {
 ?><!-- resultsHeader -->
-<TABLE CLASS="results-outer" WIDTH="98%">
-	<TR CLASS="dnbgcolor"><TD CLASS="view-dnattr" ALIGN="center"><?php echo $dn; ?></TD></TR>
+<table class="results-outer" width="100%">
+	<tr class="dnbgcolor"><td class="view-dnattr" align="center"><?php echo $dn; ?></td></tr>
 <?php
 	}
 
 	public function resultsInnerHeader() {
 ?>	<!-- resultsInnerHeader -->
-	<TR><TD>
-	<TABLE CLASS="results-inner" WIDTH="100%">
+	<tr><td>
+	<table class="results-inner" widtH="100%">
 <?php
 	}
 
 	public function resultsInnerRow($attr, $value, $status) {
 		if (!$attr) $attr = "&nbsp;";
 		if (!$value) $value = "&nbsp;";
-?>		<TR><TD CLASS="results-inner" WIDTH="40%"><?php echo $attr; ?></TD><TD CLASS="results-inner" WIDTH="40%"><?php echo $value; ?></TD><TD CLASS=<?php
+?>		<tr><td class="results-inner" width="40%"><?php echo $attr; ?></td><td class="results-inner" width="40%"><?php echo $value; ?></td><td class=<?php
 		switch ($status) {
 			case 1: echo "\"success\">OK"; break;
 			case -1: echo "\"success\">&nbsp;"; break;
 			default: echo "\"failed\">FAILED";
 		}
-?></TD></TR>
+?></td></tr>
 <?php
 	}
 
 	public function resultsInnerFooter() {
-?>	</TABLE>
-	</TD></TR>
+?>	</table>
+	</td></tr>
 	<!-- resultsInnerFooter -->
 <?php
 	}
 	
 	public function resultsTitle($text) {
-?>	<TR CLASS="bgcolor1"><TD><B><?php echo $text; ?></B></TD></TR>
+?>	<tr class="bgcolor1"><td><b><?php echo $text; ?></b></td></tr>
 <?php
 	}
 
 	public function resultsFooter() {
-?></TABLE>
+?></table>
 <!-- resultsFooter -->
 <?php
 	}
@@ -63,7 +63,7 @@ class HTMLOutput {
 	public function viewHeader() {
 ?><!-- viewHeader -->
 <form name="yalaForm" id="yalaForm">
-<table class="view-outer" width="98%">
+<table class="view-outer" width="100%">
 <?
 	}
 
@@ -71,7 +71,7 @@ class HTMLOutput {
 ?><!-- modrdnHeader -->
 <form name="yalaForm" id="yalaForm">
 <input type="hidden" name="dn" value="<?= $dn; ?>">
-<table class="view-outer" width="98%">
+<table class="view-outer" width="100%">
 	<tr class="dnbgcolor"><td class="view-dnattr" align="center"><?= $title; ?></td></tr>
 <?php
 	}
@@ -149,29 +149,6 @@ class HTMLOutput {
 		echo $str;
 	}
 
-	public function viewActionBar($entryExists) {
-?><!-- ACTION BAR BEGIN -->
-<div class="actionBar" id="actionBar">
-	<?
-	### MODIFY ###
-	if ($entryExists) {
-?><button onclick="processEntryForm('modify_entry')">Modify</button><?
-	}
-
-	### NEW ###
-
-?><button onclick="processEntryForm('create_step3')">New</button><?
-	### DELETE ###
-
-	if ($entryExists) {
-?><button onclick="deleteEntry()">Delete</button><?
-	}
-?>
-</div>
-<!-- ACTION BAR END -->
-<?
-	}
-
 	public function viewInnerFooter() {
 ?>
 	<!-- viewInnerFooter -->
@@ -203,7 +180,6 @@ class HTMLOutput {
 <!-- viewFooter -->
 </table>
 </form>
-<?php $this->viewActionBar($dn); ?>
 <?
 	}
 

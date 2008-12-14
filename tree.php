@@ -28,8 +28,6 @@ function main() {
 		$tree = new LdapTree($ldap_func, $_SESSION["ldap_basedn"]);
 		$htmloutput = new HTMLOutput();
 
-		require INCLUDE_PATH."/toolbar.inc";
-
 ?><ul class="mktree" id="TreeRoot"><?
 	$htmloutput->viewTree($tree->getTreeArray());
 ?></ul><?

@@ -10,5 +10,26 @@
 <title>YALA</title>
 </head>
 <body>
-<div id="treeDiv" class="treeDiv">&nbsp;</div>
-<div id="mainDiv" class="mainDiv">&nbsp;</div>
+<div id="sideBarDiv" class="sideBarDiv">
+	<div class="toolBar">
+		[<a href="" onclick="callBackEnd('create_step1'); return false;">New</a>]&nbsp;
+		[<a href="" onclick="callBackEnd('search_form'); return false;">Search</a>]&nbsp;
+		[<a href="" onclick="refreshTree(); return false;">Refresh</a>]&nbsp;
+		[<a href="" onclick="document.getElementById('treeDiv').style.display='none'; callBackEnd('logout'); return false;">Log Out</a>]&nbsp;
+	</div>
+	<div id="treeDiv" class="treeDiv">
+		&nbsp;
+	</div>
+</div>
+<div id="mainDiv" class="mainDiv">
+	<!-- ACTION BAR BEGIN -->
+	<div class="actionBar" id="actionBar">
+		<button id="button_modify" onclick="processEntryForm('modify_entry')" disabled>Modify</button>
+		<button id="button_new" onclick="processEntryForm('create_step3')" disabled>New</button>
+		<button id="button_delete" onclick="deleteEntry()" disabled>Delete</button>
+	</div>
+	<!-- ACTION BAR END -->
+	<div class="entryDiv" id="entryDiv">
+		&nbsp;
+	</div>
+</div>
