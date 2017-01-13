@@ -21,7 +21,7 @@ function jsutils() {
 		var request = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("MSXML2.XMLHTTP.3.0");
 
 		request.open("GET", url, true);
-		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); 
+		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		request.onreadystatechange = function() {
 			if (request.readyState == 4 && request.status == 200) {
 
@@ -30,7 +30,7 @@ function jsutils() {
 					callBackFunction(request.responseText);
 				}
 			}
-		}
+		};
 		request.send(null);
 	}
 
@@ -53,7 +53,7 @@ function jsutils() {
 					callBackFunction(request.responseText);
 				}
 			}
-		}
+		};
 		request.send(data);
 	}
 
@@ -85,14 +85,14 @@ function processEntryForm(action) {
 	for (var i = 0; i < formElements.length; i++) {
 		var el = formElements[i];
 
-		if (el.value != "") {
-			if (data[el.name] == undefined)
+		if (el.value !== "") {
+			if (data[el.name] === undefined)
 				data[el.name] = Array();
-			
+
 			data[el.name].push(el.value);
 		}
 	}
-	
+
 	var url = "back.php";
 	g_jsutils.ajaxPost(url, "do="+action+"&data="+JSON.stringify(data),
 		function (html) {
@@ -116,7 +116,7 @@ function doSearch() {
 
 	url += "&basedn="+basedn+"&filter="+filter+"&scope="+scope;
 
-	g_jsutils.ajax(url, 
+	g_jsutils.ajax(url,
 	function (html) {
 		var div = g_jsutils.el("entryDiv");
 		div.innerHTML = html;
@@ -138,7 +138,7 @@ function getSelectedOptions(id) {
 
 function callBackEnd(str, params, refresh) {
 	var url = "back.php?do="+str;
-	if (params != undefined)
+	if (params !== undefined)
 		url += "&"+params;
 
 	g_jsutils.ajax(url,
@@ -154,9 +154,9 @@ function expandBranches() {
 	var dn;
 	var el;
 
-	for (var dn in g_treeExpandedItems) {
+	for (dn in g_treeExpandedItems) {
 		el = document.getElementById(g_iterate+dn);
-		if (el != undefined) {
+		if (el !== undefined) {
 			el.className = nodeOpenClass;
 		}
 	}
@@ -177,8 +177,8 @@ function dupObj(obj, cleanupInput) {
 
 	// Find the next sibling (of the same tagName), to insert before
 	var nextObj = obj.nextSibling;
-	while (nextObj != undefined &&
-	       nextObj.nextSibling != undefined &&
+	while (nextObj !== undefined &&
+	       nextObj.nextSibling !== undefined &&
 	       nextObj.tagName != obj.tagName) {
 		nextObj = nextObj.nextSibling;
 	}
@@ -211,10 +211,10 @@ function populateTree(iterate) {
 function onResize() {
 	var windowHeight;
 
-	if (document.documentElement != undefined)
+	if (document.documentElement !== undefined)
 		windowHeight = document.documentElement.clientHeight;
 
-	if (windowHeight == undefined || windowHeight < MIN_WIN_HEIGHT)
+	if (windowHeight === undefined || windowHeight < MIN_WIN_HEIGHT)
 		windowHeight = MIN_WIN_HEIGHT;
 
 	var divsHeight = windowHeight - 65;
@@ -225,7 +225,7 @@ function onResize() {
 }
 
 function onLoad() {
-	onResize()
+	onResize();
 	populateTree(0);
 }
 
@@ -236,7 +236,7 @@ function actionButtons(on, exists) {
 	btn_new = document.getElementById("button_new");
 	if (on) {
 		btn_mod.disabled = btn_del.disabled = false;
-		if (exists) 
+		if (exists)
 			btn_new.disabled = false;
 		else
 			btn_new.disabled = true;
@@ -248,15 +248,15 @@ function actionButtons(on, exists) {
 
 function viewEntry(dn) {
 	currentEntry = dn;
-	actionButtons(true, true)
+	actionButtons(true, true);
 	callBackEnd("view_entry", "dn="+dn, false);
 }
 
 function main() {
 	var currentEntry;
 
-	window.onload = function() { onLoad(); }
-	window.onresize = function() { onResize(); }
+	window.onload = function() { onLoad(); };
+	window.onresize = function() { onResize(); };
 }
 
 /* ====== MAIN ====== */
