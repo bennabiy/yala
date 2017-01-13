@@ -64,7 +64,7 @@ class HTMLOutput {
 ?><!-- viewHeader -->
 <form name="yalaForm" id="yalaForm">
 <table class="view-outer" width="100%">
-<?
+<?php
 	}
 
 	public function modrdnHeader($title, $dn) {
@@ -90,7 +90,7 @@ class HTMLOutput {
 	<td class="view-dnattr"><acronym title="Distinguished Name">dn</acronym></td>
 	<td><input type="text" name="dn" value="<?=formatOutputStr($dn); ?>" size="<?=INPUT_TEXT_SIZE?>">&nbsp;<span class="smaller">[&nbsp;<a tabIndex=998 href="" onclick="callBackEnd('modrdn_form', 'dn=<?=urlencode($dn)?>'); return false">Modify</a>&nbsp;]</span>&nbsp;</td>
 </tr>
-<?
+<?php
 
 	}
 
@@ -100,7 +100,7 @@ class HTMLOutput {
 	<td class="view-dnattr"><acronym title="The DN before the modifictation">dn</acronym></td>
 	<td><?=formatOutputStr($dn)?></td>
 </tr>
-<?
+<?php
 	}
 
 
@@ -124,7 +124,7 @@ class HTMLOutput {
 	<td class="value"><input type="text" name="<?=$attr?>" value="<?=$value?>" size="<?=INPUT_TEXT_SIZE?>"></td>
 </tr>
 
-<?
+<?php
 	}
 
 	public function viewInnerRow($attr, $value, $bold, $acronym) {
@@ -172,7 +172,7 @@ class HTMLOutput {
 
 <div class="center smaller">Place the mouse over an unknown term in order to get help</center>
 
-<?
+<?php
 	}
 
 	public function viewFooter($dn = "") {
@@ -180,7 +180,7 @@ class HTMLOutput {
 <!-- viewFooter -->
 </table>
 </form>
-<?
+<?php
 	}
 
 	public function viewTreeElement($data) {
@@ -202,7 +202,7 @@ class HTMLOutput {
 
 		?>
 		<li id="<?=$_REQUEST["iterate"].urlencode($dn)?>"><?=$iconStr?><a href="" onclick="viewEntry('<?=urlencode($dn)?>'); return false;"><?=$rdn?></a><span>&nbsp;&nbsp;<sup>[<a href="" onclick="callBackEnd('create_step1', 'parent=<?=urlencode($dn)?>'); return false"><acronym title="Create a new entry under this entry">n</acronym></a>]</sup></span>
-		<?
+		<?php
 	}
 
 	public function viewTree($treeArray) {
@@ -232,6 +232,6 @@ class HTMLOutput {
 <div class="center"><?="Error #".$ex->getCode().": ".getErrString($ex->getCode(), $ex->getMessage());?></div>
 </div>
 <!-- ERROR DIALOG END -->
-<?
+<?php
 	}
 }

@@ -17,7 +17,7 @@ function check_form(form) {
 }
 
 </script>
-<?
+<?php
 	reset($entry_types);
 
 	$count = 0;
@@ -30,7 +30,7 @@ function check_form(form) {
 			$image = "<img src=\"".IMAGES_URLPATH."/icons/default.png\" alt=\"".$entry_type."\">";
 ?>
 <input type="radio" name="entry_type" onclick="g_chosenEntryType='<?=$entry_type?>'">&nbsp;<?=$image?>&nbsp;<?=$entry_type?><br>
-<?
+<?php
 	}
 
 ?>
@@ -40,7 +40,7 @@ function check_form(form) {
 <hr><input type="radio" name="entry_type" id="custom" value="custom">&nbsp;<img src="<?=IMAGES_URLPATH?>/icons/default.png" alt="Custom">&nbsp;custom<BR>
 <div class="center">
 	<select id="custom_objectclasses" size="8" onchange="document.getElementById('custom').checked=true;" multiple>
-<?
+<?php
 	$names = array_keys($name2oid);
 	asort($names);
 	foreach ($names as $name) {

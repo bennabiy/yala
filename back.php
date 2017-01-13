@@ -86,7 +86,7 @@ function search() {
 		$dn = $info[$i]["dn"];
 ?>
 <a href="" onclick="viewEntry('<?=urlencode($dn)?>'); return false"><?=$dn?></a><br>
-<?
+<?php
 	}
 } # }}}
 

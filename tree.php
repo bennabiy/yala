@@ -28,9 +28,9 @@ function main() {
 		$tree = new LdapTree($ldap_func, $_SESSION["ldap_basedn"]);
 		$htmloutput = new HTMLOutput();
 
-?><ul class="mktree" id="TreeRoot"><?
+?><ul class="mktree" id="TreeRoot"><?php
 	$htmloutput->viewTree($tree->getTreeArray());
-?></ul><?
+?></ul><?php
 	}
 	catch (Exception $ex) {
 		die("Error: ".getErrString($ex->getCode(), $ex->getMessage()));
