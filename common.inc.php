@@ -1,4 +1,4 @@
-<?
+<?php
 # {{{ getCachedSchema() - wraps $ldap_func->getSchema() function to add 
 # caching. We use the neat serialize() function php has..
 #
@@ -158,7 +158,7 @@ function logout() {
 	if (session_destroy()) {
 ?>
 Logged out, click <a href="">here</a> to login again...
-<?
+<?php
 	}
 	else
 		echo "Error logging out!"; // Shouldn't really happen..

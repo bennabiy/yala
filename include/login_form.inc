@@ -1,6 +1,7 @@
 <script type="text/javascript">
 // hide the tree, for it's not needed now
-document.getElementById("treeDiv").style.display = 'none';
+document.getElementById("mainDiv").style.display = 'none';
+document.getElementById("sideBarDiv").style.display = 'none';
 </script>
 <div class="center">
 <img src="images/yala-logo-small.jpg" alt="YALA logo" width="385" height="179">

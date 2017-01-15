@@ -67,7 +67,7 @@ function main() {
 <script type="text/javascript">
 window.location = "<?=$_SERVER["REQUEST_URI"]?>";
 </script>
-<?
+<?php
 	}
 
 	if ($do) {
