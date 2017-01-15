@@ -10,7 +10,7 @@
 #
 
 # General
-define("YALA_VERSION", "0.99a");
+define("YALA_VERSION", "0.99b");
 
 # ERRORS
 define("ERROR_BAD_OP"			,1);
@@ -41,12 +41,12 @@ function getErrString($error_num, $additional_str = "") {
 
 	switch ($error_num) {
 		case ERROR_BAD_OP:
-			$str = "Unknown operation was chosen"; 
+			$str = "Unknown operation was chosen";
 			if ($additional_str) $str .= " - ".$additional_str;
 			break;
 
 		case ERROR_FEW_ARGUMENTS:
-			$str = "Weird, function didn't get enough arguments!"; 
+			$str = "Weird, function didn't get enough arguments!";
 			break;
 
 		case ERROR_LDAP_CANT_CONNECT:
@@ -135,9 +135,9 @@ function array_val_to_lower($an_array) {
 	else
 		return $an_array;
 } /* }}} */
- 
 
-/* {{{ getEntryType() returns the entry first entry type in $entry_types hash 
+
+/* {{{ getEntryType() returns the entry first entry type in $entry_types hash
 	matches the objectclass list
 */
 function getEntryType($objectclasses) {
@@ -170,7 +170,7 @@ function formatOutputStr($str) {
 	}
 
 	return $str;
-	
+
 } /* }}} */
 
 
@@ -188,14 +188,14 @@ function formatInputStr($str) {
 
 /* {{{ formatInputArray() uses formatInputStr() to format a whole
 	array of strings came from _POST
-	It returns the formatted new string 
+	It returns the formatted new string
 */
 function formatInputArray($a) {
 	if (!is_array($a)) return array();
 
 	reset($a);
 	while ( list($attr, $values) = each($a) ) {
-		
+
 		# Skip if not an array: means it's not an value of the
 		# directory
 		if (!is_array($values)) continue;
