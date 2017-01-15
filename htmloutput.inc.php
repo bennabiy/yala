@@ -48,7 +48,7 @@ class HTMLOutput {
 	<!-- resultsInnerFooter -->
 <?php
 	}
-	
+
 	public function resultsTitle($text) {
 ?>	<tr class="bgcolor1"><td><b><?php echo $text; ?></b></td></tr>
 <?php
@@ -107,7 +107,7 @@ class HTMLOutput {
 	public function modrdnInnerRow($attr, $value, $acronym) {
 
 		# Very stupid color changing
-		if (isset($this->bgcolor) && $this->bgcolor == "bgcolor2") 
+		if (isset($this->bgcolor) && $this->bgcolor == "bgcolor2")
 			$this->bgcolor = "bgcolor1";
 		else
 			$this->bgcolor = "bgcolor2";
@@ -130,12 +130,12 @@ class HTMLOutput {
 	public function viewInnerRow($attr, $value, $bold, $acronym) {
 
 		# Very stupid color changing
-		if (isset($this->bgcolor) && $this->bgcolor == "bgcolor2") 
+		if (isset($this->bgcolor) && $this->bgcolor == "bgcolor2")
 			$this->bgcolor = "bgcolor1";
 		else
 			$this->bgcolor = "bgcolor2";
 
-		$str = 
+		$str =
 "		<tr class=\"".$this->bgcolor."\"><td class=\"attr\">";
 		if ($bold) $str .= "<b>";
 		if ($acronym) $str .= "<acronym title=\"".$acronym."\">";
@@ -156,9 +156,9 @@ class HTMLOutput {
 	</td></tr>
 <?php
 	}
-	
+
 	public function viewTitle($text) {
-?><tr class="bgcolor1"><td><b><?= $text; ?></b></td></tr><?
+?><tr class="bgcolor1"><td><b><?= $text; ?></b></td></tr><?php
 	}
 
 	public function modrdnFooter() {
