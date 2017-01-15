@@ -27,7 +27,7 @@ H2 { font-size: 10px; color: #AAAAAA; font-weight: normal; }
 INPUT.submit { background: #E5EFFF; color: #3333CC; }
 .TreeItemIcon { padding-right: 5px; }
 div.sideBarDiv { float: left; width: 250px; background-color: #f3f3f3; border: 1px solid #d0d0d0; }
-div.mainDiv { margin-left: 265px; border: 1px solid #d0d0d0; }
+div.mainDiv { margin-left: 265px; border: 1px solid #d0d0d0; display: none;}
 div.entryDiv { height: 400px; overflow: auto; }
 div.treeDiv { height: 400px; overflow: auto; }
 div.center { text-align: center; }
