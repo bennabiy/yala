@@ -8,6 +8,5 @@ php:
   - '5.6'
   - '7.0'
   - '7.1'
-  - hhvm
   - nightly
 script: phpunit index.php
